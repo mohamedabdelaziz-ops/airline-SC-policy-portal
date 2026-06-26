@@ -1,0 +1,60 @@
+[
+  {
+    "airlineName": "Air Canada",
+    "iata": "AC",
+    "icao": "ACA",
+    "logo": "✈️",
+    "lastUpdated": "2026-06-26",
+    "scheduleChange": {
+      "minorChange": "Less than 60 minutes",
+      "majorChange": "60 minutes or more",
+      "threshold": "60 minutes",
+      "travelWindow": "+/-7 days",
+      "beforeDeparture": "7 days",
+      "afterDeparture": "7 days",
+      "sameCabin": true,
+      "sameBookingClass": true,
+      "lowestAvailableClass": "Same RBD Preferred",
+      "oalAllowed": false,
+      "ticketReissue": true,
+      "waiverRequired": true
+    },
+    "refundPolicy": {
+      "refundAllowed": true,
+      "refundThreshold": "120 minutes",
+      "cancellationRefund": true,
+      "majorScheduleChangeRefund": true,
+      "penalty": "None",
+      "waiverRequired": true
+    }
+  },
+  {
+    "airlineName": "Delta Air Lines",
+    "iata": "DL",
+    "icao": "DAL",
+    "logo": "📐",
+    "lastUpdated": "2026-06-20",
+    "scheduleChange": {
+      "minorChange": "Less than 60 minutes",
+      "majorChange": "60 minutes or more",
+      "threshold": "60 minutes",
+      "travelWindow": "+/-2 days",
+      "beforeDeparture": "2 days",
+      "afterDeparture": "2 days",
+      "sameCabin": true,
+      "sameBookingClass": true,
+      "lowestAvailableClass": "Main Cabin Lowest",
+      "oalAllowed": true,
+      "ticketReissue": true,
+      "waiverRequired": false
+    },
+    "refundPolicy": {
+      "refundAllowed": true,
+      "refundThreshold": "180 minutes",
+      "cancellationRefund": true,
+      "majorScheduleChangeRefund": true,
+      "penalty": "None",
+      "waiverRequired": false
+    }
+  }
+]
