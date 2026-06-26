@@ -200,6 +200,13 @@
             }
         },
 
+        formAirline: {
+            airlineName: '', iata: '', icao: '', logo: '✈️', lastUpdated: '2026-06-26',
+            scheduleChange: { minorChange: '', majorChange: '', threshold: '', travelWindow: '', sameCabin: false, sameBookingClass: false, lowestAvailableClass: '', oalAllowed: false, ticketReissue: false, waiverRequired: false, endorsementCode: '', geoAllowance: '' },
+            refundPolicy: { refundAllowed: false, refundThreshold: '', cancellationRefund: false, majorScheduleChangeRefund: false, penalty: 'None', waiverRequired: false, refundWaiverCode: '', osiTourCode: '' },
+            nameCorrection: { typoAllowance: '', legalChange: '', passportMatch: false, penaltyFee: '', gdsCommand: '', osiString: '' }
+        },
+
         init() {
             this.airlines = [
                 {
@@ -221,7 +228,7 @@
                     nameCorrection: { typoAllowance: 'First or middle name up to 3 chars', legalChange: 'Marriage/Divorce certificates accepted', passportMatch: true, penaltyFee: 'UltraBasic excluded, others free for typos', gdsCommand: 'CHNE/GDS SWAP PERMITTED', osiString: 'OS WS TYPO CORR' }
                 }
             ];
-            this.selectedAirline = this.airlines[2]; // Pre-loads WestJet Airlines cleanly
+            this.selectedAirline = this.airlines[2]; 
         },
         get filteredAirlines() {
             if (!this.searchQuery) return this.airlines;
@@ -259,6 +266,11 @@
             }
             this.selectedAirline = this.airlines[this.airlines.length - 1];
             this.resetForm();
+        },
+        editAirline(airline) {
+            this.formAirline = JSON.parse(JSON.stringify(airline));
+            this.isEditing = true;
+            this.isAdminMode = true;
         }
     }" :dir="currentLang === 'ar' ? 'rtl' : 'ltr'" class="min-h-screen flex flex-col bg-slate-950 text-slate-100">
 
@@ -275,150 +287,4 @@
                 <div class="bg-slate-950 border border-slate-800 rounded-lg p-1 flex space-x-1">
                     <button @click="currentLang = 'en'" :class="currentLang === 'en' ? 'bg-sky-600 font-bold text-white' : 'text-slate-400 hover:text-white'" class="px-2 py-1 rounded text-xs transition">EN</button>
                     <button @click="currentLang = 'ar'" :class="currentLang === 'ar' ? 'bg-sky-600 font-bold text-white' : 'text-slate-400 hover:text-white'" class="px-2 py-1 rounded text-xs transition">AR</button>
-                    <button @click="currentLang = 'fr'" :class="currentLang === 'fr' ? 'bg-sky-600 font-bold text-white' : 'text-slate-400 hover:text-white'" class="px-2 py-1 rounded text-xs transition">FR</button>
-                </div>
-
-                <div x-show="!isAdminMode" class="flex items-center space-x-2 bg-slate-900 p-1 border border-slate-800 rounded-lg">
-                    <input type="password" placeholder="Admin Key..." x-model="adminPasswordInput" @keyup.enter="verifyAdmin()" class="bg-slate-950 border-0 outline-none text-xs px-3 py-1.5 rounded text-white w-24 placeholder-slate-600 focus:ring-1 focus:ring-sky-500" />
-                    <button @click="verifyAdmin()" class="bg-slate-800 hover:bg-sky-600 text-white font-bold text-[10px] px-2.5 py-1.5 rounded transition uppercase tracking-wider">Auth</button>
-                </div>
-                <div x-show="isAdminMode" class="flex items-center space-x-2">
-                    <span class="text-xs font-mono px-2 py-1 rounded bg-amber-500/10 border border-amber-500/30 text-amber-400 font-bold">🛠️ MASTER</span>
-                    <button @click="isAdminMode = false; resetForm()" class="text-xs border border-slate-700 bg-slate-800 hover:bg-rose-600 text-white px-3 py-1 rounded transition">Lock</button>
-                </div>
-            </div>
-        </nav>
-
-        <main class="max-w-7xl mx-auto p-6 lg:p-8 grid grid-cols-1 lg:grid-cols-4 gap-8 flex-1 w-full">
-            
-            <div class="lg:col-span-1 space-y-6">
-                <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-xl space-y-4">
-                    <div>
-                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2" x-text="i18n[currentLang].searchLabel"></label>
-                        <input type="text" :placeholder="i18n[currentLang].searchPlaceholder" x-model="searchQuery" class="w-full px-4 py-2 bg-slate-950 border border-slate-700 rounded-lg text-white placeholder-slate-500 transition text-sm focus:outline-none focus:ring-2 focus:ring-sky-500" />
-                    </div>
-                </div>
-
-                <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-xl">
-                    <span class="text-xs font-semibold text-slate-400 block mb-3 uppercase tracking-wider"><span x-text="i18n[currentLang].indexLabel"></span> (<span x-text="filteredAirlines.length"></span>)</span>
-                    <div class="space-y-1.5 max-h-[300px] overflow-y-auto pr-1">
-                        <template x-for="airline in filteredAirlines" :key="airline.iata">
-                            <button @click="selectedAirline = airline" :class="selectedAirline && selectedAirline.iata === airline.iata ? 'bg-gradient-to-r from-sky-600 to-indigo-600 text-white shadow-lg' : 'bg-slate-950 hover:bg-slate-800 text-slate-300 border border-slate-800/60'" class="w-full text-left p-3 rounded-lg flex justify-between items-center transition">
-                                <div class="flex items-center space-x-3"><span class="text-lg" x-text="airline.logo"></span><span class="font-semibold text-sm" x-text="airline.airlineName"></span></div>
-                                <span class="font-mono text-xs opacity-70" x-text="'[' + airline.iata + ']'"></span>
-                            </button>
-                        </template>
-                    </div>
-                </div>
-            </div>
-
-            <div class="lg:col-span-3 space-y-6">
-                
-                <div class="bg-slate-900 border border-slate-800 p-1.5 rounded-xl flex space-x-2">
-                    <button @click="activePolicy = 'skchg'" :class="activePolicy === 'skchg' ? 'bg-gradient-to-r from-sky-600 to-indigo-600 text-white shadow-md font-bold' : 'text-slate-400 hover:text-slate-200'" class="flex-1 py-2.5 rounded-lg text-sm font-semibold transition" x-text="i18n[currentLang].tabSkchg"></button>
-                    <button @click="activePolicy = 'namecorr'" :class="activePolicy === 'namecorr' ? 'bg-gradient-to-r from-sky-600 to-indigo-600 text-white shadow-md font-bold' : 'text-slate-400 hover:text-slate-200'" class="flex-1 py-2.5 rounded-lg text-sm font-semibold transition" x-text="i18n[currentLang].tabNameCorr"></button>
-                </div>
-
-                <template x-if="isAdminMode">
-                    <div class="bg-slate-900 border-2 border-dashed border-amber-500/30 rounded-xl p-6 shadow-2xl space-y-6">
-                        <div class="flex justify-between items-center border-b border-slate-800 pb-3">
-                            <h3 class="font-bold text-sm text-amber-400 uppercase tracking-wider">Policy Injection Engine Workspace</h3>
-                        </div>
-                        <div class="text-xs text-slate-400 italic">Form controls active. Enter parameters matching standard definitions.</div>
-                    </div>
-                </template>
-
-                <div>
-                    <template x-if="selectedAirline">
-                        <div class="space-y-6">
-                            
-                            <div class="bg-gradient-to-r from-slate-900 via-slate-900 to-indigo-950/40 p-6 rounded-xl border border-slate-800 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-xl">
-                                <div class="flex items-center space-x-4">
-                                    <div class="text-4xl bg-slate-950 p-3 rounded-xl border border-slate-700 shadow-inner" x-text="selectedAirline.logo"></div>
-                                    <div>
-                                        <h2 class="text-2xl font-bold text-white tracking-tight" x-text="selectedAirline.airlineName"></h2>
-                                        <p class="text-xs text-slate-400 mt-0.5">GDS Identification: IATA: <span class="text-sky-400 font-mono font-bold" x-text="selectedAirline.iata"></span> | ICAO: <span class="text-sky-400 font-mono font-bold" x-text="selectedAirline.icao"></span></p>
-                                    </div>
-                                </div>
-                                <div class="flex items-center bg-slate-950 border border-slate-800 p-1 rounded-lg">
-                                    <button @click="viewMode = 'customer'" :class="viewMode === 'customer' ? 'bg-sky-600 text-white font-bold' : 'text-slate-400 hover:text-slate-200'" class="px-3 py-1.5 rounded-md text-xs font-bold uppercase tracking-wider" x-text="i18n[currentLang].paxView"></button>
-                                    <button @click="viewMode = 'agent'" :class="viewMode === 'agent' ? 'bg-indigo-600 text-white font-bold' : 'text-slate-400 hover:text-slate-200'" class="px-3 py-1.5 rounded-md text-xs font-bold uppercase tracking-wider" x-text="i18n[currentLang].agentView"></button>
-                                </div>
-                            </div>
-
-                            <template x-if="activePolicy === 'skchg'">
-                                <div class="space-y-6">
-                                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 text-center"><span class="block text-[10px] uppercase font-bold text-slate-400 tracking-wider" x-text="i18n[currentLang].skdTrigger"></span><span class="text-base font-bold text-amber-400 mt-1 block" x-text="selectedAirline.scheduleChange.threshold"></span></div>
-                                        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 text-center"><span class="block text-[10px] uppercase font-bold text-slate-400 tracking-wider" x-text="i18n[currentLang].travelWindow"></span><span class="text-base font-bold text-sky-400 mt-1 block" x-text="selectedAirline.scheduleChange.travelWindow"></span></div>
-                                        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 text-center"><span class="block text-[10px] uppercase font-bold text-slate-400 tracking-wider" x-text="i18n[currentLang].oalRebooking"></span><span class="text-base font-bold text-emerald-400 mt-1 block" x-text="selectedAirline.scheduleChange.oalAllowed ? i18n[currentLang].allowed : i18n[currentLang].prohibited"></span></div>
-                                        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 text-center"><span class="block text-[10px] uppercase font-bold text-slate-400 tracking-wider" x-text="i18n[currentLang].refundEligibility"></span><span class="text-base font-bold text-emerald-400 mt-1 block" x-text="selectedAirline.refundPolicy.refundAllowed ? i18n[currentLang].yes : i18n[currentLang].no"></span></div>
-                                    </div>
-
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div class="bg-slate-900 p-6 rounded-xl border border-slate-800 shadow-xl space-y-4">
-                                            <div class="flex items-center space-x-2 border-b border-slate-800 pb-3"><span class="text-lg">🔄</span><h3 class="text-sm font-bold text-sky-400 uppercase tracking-wider" x-text="i18n[currentLang].skdHeader"></h3></div>
-                                            <div class="space-y-3 text-sm">
-                                                <div class="flex justify-between border-b border-slate-800/40 pb-1.5"><span class="text-slate-400" x-text="i18n[currentLang].minorLabel"></span><span class="font-medium text-slate-200" x-text="selectedAirline.scheduleChange.minorChange"></span></div>
-                                                <div class="flex justify-between border-b border-slate-800/40 pb-1.5"><span class="text-slate-400" x-text="i18n[currentLang].majorLabel"></span><span class="font-medium text-slate-200" x-text="selectedAirline.scheduleChange.majorChange"></span></div>
-                                                <template x-if="viewMode === 'agent'">
-                                                    <div class="space-y-3 pt-3">
-                                                        <div class="flex justify-between border-b border-slate-800/40 pb-1.5"><span class="text-slate-400 text-xs" x-text="i18n[currentLang].fallbackLabel"></span><span class="font-medium text-indigo-300 font-mono text-[11px] bg-slate-950 px-2 py-0.5 rounded border border-slate-800 text-right max-w-[200px]" x-text="selectedAirline.scheduleChange.lowestAvailableClass"></span></div>
-                                                        <div class="flex justify-between border-b border-slate-800/40 pb-1.5" x-show="selectedAirline.scheduleChange.endorsementCode"><span class="text-slate-400 text-xs" x-text="i18n[currentLang].endorseTextLabel"></span><span class="font-mono text-[11px] font-bold text-amber-400 bg-slate-950 px-2 py-0.5 rounded border border-slate-800" x-text="selectedAirline.scheduleChange.endorsementCode"></span></div>
-                                                        <div class="flex justify-between pb-0.5" x-show="selectedAirline.scheduleChange.geoAllowance"><span class="text-slate-400 text-xs" x-text="i18n[currentLang].geoLabel"></span><span class="font-medium text-slate-300 text-xs text-right max-w-[200px]" x-text="selectedAirline.scheduleChange.geoAllowance"></span></div>
-                                                    </div>
-                                                </template>
-                                            </div>
-                                        </div>
-                                        <div class="bg-slate-900 p-6 rounded-xl border border-slate-800 shadow-xl space-y-4">
-                                            <div class="flex items-center space-x-2 border-b border-slate-800 pb-3"><span class="text-lg">💰</span><h3 class="text-sm font-bold text-emerald-400 uppercase tracking-wider" x-text="i18n[currentLang].refundHeader"></h3></div>
-                                            <div class="space-y-3 text-sm">
-                                                <div class="flex justify-between border-b border-slate-800/40 pb-1.5"><span class="text-slate-400" x-text="i18n[currentLang].cancelRefundLabel"></span><span class="font-medium text-emerald-400" x-text="selectedAirline.refundPolicy.cancellationRefund ? i18n[currentLang].fullRefAuth : i18n[currentLang].creditShell"></span></div>
-                                                <div class="flex justify-between border-b border-slate-800/40 pb-1.5"><span class="text-slate-400" x-text="i18n[currentLang].sigTriggerLabel"></span><span class="font-medium text-slate-200" x-text="selectedAirline.refundPolicy.refundThreshold"></span></div>
-                                                <template x-if="viewMode === 'agent'">
-                                                    <div class="space-y-3 pt-3">
-                                                        <div class="flex justify-between border-b border-slate-800/40 pb-1.5"><span class="text-slate-400 text-xs" x-text="i18n[currentLang].adminPenLabel"></span><span class="font-medium text-slate-300 font-mono text-[11px] bg-slate-950 px-2 py-0.5 rounded border border-slate-800 text-right max-w-[190px] truncate" x-text="selectedAirline.refundPolicy.penalty"></span></div>
-                                                        <div class="flex justify-between border-b border-slate-800/40 pb-1.5" x-show="selectedAirline.refundPolicy.refundWaiverCode"><span class="text-slate-400 text-xs" x-text="i18n[currentLang].cashRefLabel"></span><span class="font-mono text-[11px] font-bold text-emerald-400 bg-slate-950 px-2 py-0.5 rounded border border-slate-800" x-text="selectedAirline.refundPolicy.refundWaiverCode"></span></div>
-                                                    </div>
-                                                </template>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </template>
-
-                            <template x-if="activePolicy === 'namecorr'">
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fadeIn">
-                                    <div class="bg-slate-900 p-6 rounded-xl border border-slate-800 shadow-xl space-y-4">
-                                        <div class="flex items-center space-x-2 border-b border-slate-800 pb-3"><span class="text-lg">📝</span><h3 class="text-sm font-bold text-sky-400 uppercase tracking-wider" x-text="i18n[currentLang].nameHeader"></h3></div>
-                                        <div class="space-y-3 text-sm">
-                                            <div class="flex justify-between border-b border-slate-800/40 pb-1.5"><span class="text-slate-400" x-text="i18n[currentLang].typoLabel"></span><span class="font-medium text-slate-200" x-text="selectedAirline.nameCorrection?.typoAllowance || 'N/A'"></span></div>
-                                            <div class="flex justify-between border-b border-slate-800/40 pb-1.5"><span class="text-slate-400" x-text="i18n[currentLang].legalLabel"></span><span class="font-medium text-slate-200" x-text="selectedAirline.nameCorrection?.legalChange || 'N/A'"></span></div>
-                                            <div class="flex justify-between pb-0.5"><span class="text-slate-400" x-text="i18n[currentLang].nameFeeLabel"></span><span class="font-medium text-amber-400 font-semibold" x-text="selectedAirline.nameCorrection?.penaltyFee || 'N/A'"></span></div>
-                                        </div>
-                                    </div>
-                                    <div class="bg-slate-900 p-6 rounded-xl border border-slate-800 shadow-xl space-y-4">
-                                        <div class="flex items-center space-x-2 border-b border-slate-800 pb-3"><span class="text-lg">⌨️</span><h3 class="text-sm font-bold text-emerald-400 uppercase tracking-wider" x-text="i18n[currentLang].gdsCmdHeader"></h3></div>
-                                        <div class="space-y-3 text-sm">
-                                            <div class="flex justify-between border-b border-slate-800/40 pb-1.5"><span class="text-slate-400" x-text="i18n[currentLang].passportLabel"></span><span class="font-medium text-slate-200 font-bold" x-text="selectedAirline.nameCorrection?.passportMatch ? i18n[currentLang].yes : i18n[currentLang].no"></span></div>
-                                            <template x-if="viewMode === 'agent'">
-                                                <div class="space-y-3 pt-1">
-                                                    <div class="flex justify-between border-b border-slate-800/40 pb-1.5"><span class="text-slate-400 text-xs" x-text="i18n[currentLang].gdsReissueLabel"></span><span class="font-mono text-[11px] font-bold text-emerald-400 bg-slate-950 px-2 py-0.5 rounded border border-slate-800" x-text="selectedAirline.nameCorrection?.gdsCommand || 'N/A'"></span></div>
-                                                    <div class="flex justify-between pb-0.5"><span class="text-slate-400 text-xs" x-text="i18n[currentLang].osiNameLabel"></span><span class="font-mono text-[11px] font-bold text-sky-400 bg-slate-950 px-2 py-0.5 rounded border border-slate-800" x-text="selectedAirline.nameCorrection?.osiString || 'N/A'"></span></div>
-                                                </div>
-                                            </template>
-                                        </div>
-                                    </div>
-                                </div>
-                            </template>
-                            
-                        </div>
-                    </template>
-                </div>
-
-            </div>
-        </main>
-    </div>
-
-</body>
-</html>
+                    <button @click="currentLang = 'fr'" :class="currentLang === 'fr' ? 'bg-sky-600 font-bold text-white' : 'text-slate-400 hover:text
