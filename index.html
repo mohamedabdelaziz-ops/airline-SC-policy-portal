@@ -37,7 +37,7 @@
                 {
                     airlineName: 'Delta Air Lines', iata: 'DL', icao: 'DAL', logo: '📐', lastUpdated: '2026-06-20',
                     scheduleChange: { minorChange: 'Less than 60 minutes', majorChange: '60 minutes or more', threshold: '60 minutes', travelWindow: '+/-2 days', sameCabin: true, sameBookingClass: true, lowestAvailableClass: 'Main Cabin Lowest', oalAllowed: true, ticketReissue: true, waiverRequired: false, endorsementCode: 'SKCHG DL', geoAllowance: 'Co-terminal options permitted' },
-                    refundPolicy: { refundAllowed: true, refundThreshold: '180 minutes', cancellationRefund: true, majorScheduleChangeRefund: true, penalty: 'None', waiverRequired: false, refundWaiverCode: 'DL INVOL REF', osiTourCode: 'OS DL SKCHG FIELD' }
+                    refundPolicy: { refundAllowed: true, refundThreshold: '180 minutes', cancellationRefund: true, majorScheduleChangeRefund: true, penalty: 'None', waiverRequired: false, refundWaiverCode: 'DL INVOL REF', osiTourCode: 'OS DL SKCHG' }
                 },
                 {
                     airlineName: 'WestJet Airlines', iata: 'WS', icao: 'WJA', logo: '🍁', lastUpdated: '2026-06-26',
@@ -144,20 +144,4 @@
                                 </button>
                                 <template x-if="isAdminMode">
                                     <div class="flex flex-col space-y-1">
-                                        <button @click="editAirline(airline)" class="p-1 bg-slate-800 hover:bg-amber-600 text-[10px] rounded text-amber-400 hover:text-white">✏️</button>
-                                        <button @click="deleteAirline(airline.iata)" class="p-1 bg-slate-800 hover:bg-rose-600 text-[10px] rounded text-rose-400 hover:text-white">❌</button>
-                                    </div>
-                                </template>
-                            </div>
-                        </template>
-                    </div>
-                </div>
-            </div>
-
-            <div class="lg:col-span-3 space-y-6">
-                
-                <template x-if="isAdminMode">
-                    <div class="bg-slate-900 border-2 border-dashed border-amber-500/30 rounded-xl p-6 shadow-2xl space-y-6">
-                        <div class="flex justify-between items-center border-b border-slate-800 pb-3">
-                            <h3 class="font-bold text-base text-amber-400 uppercase tracking-wider" x-text="isEditing ? 'Modify Carrier Profiles Matrix' : 'Inject New Fleet Policy Ruleset' "></h3>
-                            <button @click="resetForm()" class="text-xs
+                                        <button @click="editAirline(airline)" class="p-1 bg-slate-800 hover:bg-amber-600
