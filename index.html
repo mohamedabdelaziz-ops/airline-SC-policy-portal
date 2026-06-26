@@ -221,7 +221,7 @@
                     nameCorrection: { typoAllowance: 'First or middle name up to 3 chars', legalChange: 'Marriage/Divorce certificates accepted', passportMatch: true, penaltyFee: 'UltraBasic excluded, others free for typos', gdsCommand: 'CHNE/GDS SWAP PERMITTED', osiString: 'OS WS TYPO CORR' }
                 }
             ];
-            this.selectedAirline = this.airlines[1]; // Pre-loads Delta Air Lines
+            this.selectedAirline = this.airlines[2]; // Pre-loads WestJet Airlines cleanly
         },
         get filteredAirlines() {
             if (!this.searchQuery) return this.airlines;
@@ -230,6 +230,35 @@
                        airline.iata.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
                        airline.icao.toLowerCase().includes(this.searchQuery.toLowerCase());
             });
+        },
+        verifyAdmin() {
+            if(this.adminPasswordInput === 'admin123') {
+                this.isAdminMode = true;
+                this.adminPasswordInput = '';
+            } else { alert('Access Denied: Incorrect Security Token'); }
+        },
+        resetForm() {
+            this.formAirline = {
+                airlineName: '', iata: '', icao: '', logo: '✈️', lastUpdated: '2026-06-26',
+                scheduleChange: { minorChange: '', majorChange: '', threshold: '', travelWindow: '', sameCabin: false, sameBookingClass: false, lowestAvailableClass: '', oalAllowed: false, ticketReissue: false, waiverRequired: false, endorsementCode: '', geoAllowance: '' },
+                refundPolicy: { refundAllowed: false, refundThreshold: '', cancellationRefund: false, majorScheduleChangeRefund: false, penalty: 'None', waiverRequired: false, refundWaiverCode: '', osiTourCode: '' },
+                nameCorrection: { typoAllowance: '', legalChange: '', passportMatch: false, penaltyFee: '', gdsCommand: '', osiString: '' }
+            };
+            this.isEditing = false;
+        },
+        saveAirline() {
+            if(!this.formAirline.airlineName || !this.formAirline.iata) return alert('Airline Name and IATA Code are required.');
+            this.formAirline.iata = this.formAirline.iata.toUpperCase();
+            this.formAirline.icao = this.formAirline.icao.toUpperCase();
+            
+            if(this.isEditing) {
+                const idx = this.airlines.findIndex(a => a.iata === this.formAirline.iata);
+                if(idx !== -1) this.airlines[idx] = JSON.parse(JSON.stringify(this.formAirline));
+            } else {
+                this.airlines.push(JSON.parse(JSON.stringify(this.formAirline)));
+            }
+            this.selectedAirline = this.airlines[this.airlines.length - 1];
+            this.resetForm();
         }
     }" :dir="currentLang === 'ar' ? 'rtl' : 'ltr'" class="min-h-screen flex flex-col bg-slate-950 text-slate-100">
 
@@ -247,6 +276,15 @@
                     <button @click="currentLang = 'en'" :class="currentLang === 'en' ? 'bg-sky-600 font-bold text-white' : 'text-slate-400 hover:text-white'" class="px-2 py-1 rounded text-xs transition">EN</button>
                     <button @click="currentLang = 'ar'" :class="currentLang === 'ar' ? 'bg-sky-600 font-bold text-white' : 'text-slate-400 hover:text-white'" class="px-2 py-1 rounded text-xs transition">AR</button>
                     <button @click="currentLang = 'fr'" :class="currentLang === 'fr' ? 'bg-sky-600 font-bold text-white' : 'text-slate-400 hover:text-white'" class="px-2 py-1 rounded text-xs transition">FR</button>
+                </div>
+
+                <div x-show="!isAdminMode" class="flex items-center space-x-2 bg-slate-900 p-1 border border-slate-800 rounded-lg">
+                    <input type="password" placeholder="Admin Key..." x-model="adminPasswordInput" @keyup.enter="verifyAdmin()" class="bg-slate-950 border-0 outline-none text-xs px-3 py-1.5 rounded text-white w-24 placeholder-slate-600 focus:ring-1 focus:ring-sky-500" />
+                    <button @click="verifyAdmin()" class="bg-slate-800 hover:bg-sky-600 text-white font-bold text-[10px] px-2.5 py-1.5 rounded transition uppercase tracking-wider">Auth</button>
+                </div>
+                <div x-show="isAdminMode" class="flex items-center space-x-2">
+                    <span class="text-xs font-mono px-2 py-1 rounded bg-amber-500/10 border border-amber-500/30 text-amber-400 font-bold">🛠️ MASTER</span>
+                    <button @click="isAdminMode = false; resetForm()" class="text-xs border border-slate-700 bg-slate-800 hover:bg-rose-600 text-white px-3 py-1 rounded transition">Lock</button>
                 </div>
             </div>
         </nav>
@@ -281,6 +319,15 @@
                     <button @click="activePolicy = 'namecorr'" :class="activePolicy === 'namecorr' ? 'bg-gradient-to-r from-sky-600 to-indigo-600 text-white shadow-md font-bold' : 'text-slate-400 hover:text-slate-200'" class="flex-1 py-2.5 rounded-lg text-sm font-semibold transition" x-text="i18n[currentLang].tabNameCorr"></button>
                 </div>
 
+                <template x-if="isAdminMode">
+                    <div class="bg-slate-900 border-2 border-dashed border-amber-500/30 rounded-xl p-6 shadow-2xl space-y-6">
+                        <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                            <h3 class="font-bold text-sm text-amber-400 uppercase tracking-wider">Policy Injection Engine Workspace</h3>
+                        </div>
+                        <div class="text-xs text-slate-400 italic">Form controls active. Enter parameters matching standard definitions.</div>
+                    </div>
+                </template>
+
                 <div>
                     <template x-if="selectedAirline">
                         <div class="space-y-6">
@@ -314,34 +361,24 @@
                                             <div class="space-y-3 text-sm">
                                                 <div class="flex justify-between border-b border-slate-800/40 pb-1.5"><span class="text-slate-400" x-text="i18n[currentLang].minorLabel"></span><span class="font-medium text-slate-200" x-text="selectedAirline.scheduleChange.minorChange"></span></div>
                                                 <div class="flex justify-between border-b border-slate-800/40 pb-1.5"><span class="text-slate-400" x-text="i18n[currentLang].majorLabel"></span><span class="font-medium text-slate-200" x-text="selectedAirline.scheduleChange.majorChange"></span></div>
-                                                
-                                                <div class="flex justify-between border-b border-slate-800/40 pb-1.5"><span class="text-slate-400" x-text="i18n[currentLang].cabinLabel"></span><span class="font-medium text-slate-200" x-text="selectedAirline.scheduleChange.sameCabin ? i18n[currentLang].strictCabin : i18n[currentLang].altCabin"></span></div>
-                                                <div class="flex justify-between border-b border-slate-800/40 pb-1.5"><span class="text-slate-400" x-text="i18n[currentLang].rbdLabel"></span><span class="font-medium text-slate-200" x-text="selectedAirline.scheduleChange.sameBookingClass ? i18n[currentLang].exactRbd : i18n[currentLang].lowestRbd"></span></div>
-                                                
                                                 <template x-if="viewMode === 'agent'">
-                                                    <div class="space-y-3 pt-3 border-t border-slate-800/60">
-                                                        <div class="flex justify-between border-b border-slate-800/40 pb-1.5"><span class="text-slate-400 text-xs" x-text="i18n[currentLang].fallbackLabel"></span><span class="font-medium text-indigo-300 font-mono text-[11px] bg-slate-950 px-2 py-0.5 rounded border border-slate-800 text-right" x-text="selectedAirline.scheduleChange.lowestAvailableClass"></span></div>
-                                                        <div class="flex justify-between border-b border-slate-800/40 pb-1.5"><span class="text-slate-400 text-xs" x-text="i18n[currentLang].reissueLabel"></span><span class="font-mono text-[11px] font-bold" :class="selectedAirline.scheduleChange.ticketReissue ? 'text-emerald-400' : 'text-rose-400'" x-text="selectedAirline.scheduleChange.ticketReissue ? i18n[currentLang].reissueNeeded : i18n[currentLang].reissueWaiver"></span></div>
-                                                        <div class="flex justify-between border-b border-slate-800/40 pb-1.5"><span class="text-slate-400 text-xs" x-text="i18n[currentLang].endorseLabel"></span><span class="font-mono text-[11px] font-bold" :class="selectedAirline.scheduleChange.waiverRequired ? 'text-amber-400' : 'text-emerald-400'" x-text="selectedAirline.scheduleChange.waiverRequired ? i18n[currentLang].mandWaiver : i18n[currentLang].autoWaiver"></span></div>
+                                                    <div class="space-y-3 pt-3">
+                                                        <div class="flex justify-between border-b border-slate-800/40 pb-1.5"><span class="text-slate-400 text-xs" x-text="i18n[currentLang].fallbackLabel"></span><span class="font-medium text-indigo-300 font-mono text-[11px] bg-slate-950 px-2 py-0.5 rounded border border-slate-800 text-right max-w-[200px]" x-text="selectedAirline.scheduleChange.lowestAvailableClass"></span></div>
                                                         <div class="flex justify-between border-b border-slate-800/40 pb-1.5" x-show="selectedAirline.scheduleChange.endorsementCode"><span class="text-slate-400 text-xs" x-text="i18n[currentLang].endorseTextLabel"></span><span class="font-mono text-[11px] font-bold text-amber-400 bg-slate-950 px-2 py-0.5 rounded border border-slate-800" x-text="selectedAirline.scheduleChange.endorsementCode"></span></div>
                                                         <div class="flex justify-between pb-0.5" x-show="selectedAirline.scheduleChange.geoAllowance"><span class="text-slate-400 text-xs" x-text="i18n[currentLang].geoLabel"></span><span class="font-medium text-slate-300 text-xs text-right max-w-[200px]" x-text="selectedAirline.scheduleChange.geoAllowance"></span></div>
                                                     </div>
                                                 </template>
                                             </div>
                                         </div>
-
                                         <div class="bg-slate-900 p-6 rounded-xl border border-slate-800 shadow-xl space-y-4">
                                             <div class="flex items-center space-x-2 border-b border-slate-800 pb-3"><span class="text-lg">💰</span><h3 class="text-sm font-bold text-emerald-400 uppercase tracking-wider" x-text="i18n[currentLang].refundHeader"></h3></div>
                                             <div class="space-y-3 text-sm">
                                                 <div class="flex justify-between border-b border-slate-800/40 pb-1.5"><span class="text-slate-400" x-text="i18n[currentLang].cancelRefundLabel"></span><span class="font-medium text-emerald-400" x-text="selectedAirline.refundPolicy.cancellationRefund ? i18n[currentLang].fullRefAuth : i18n[currentLang].creditShell"></span></div>
                                                 <div class="flex justify-between border-b border-slate-800/40 pb-1.5"><span class="text-slate-400" x-text="i18n[currentLang].sigTriggerLabel"></span><span class="font-medium text-slate-200" x-text="selectedAirline.refundPolicy.refundThreshold"></span></div>
-                                                <div class="flex justify-between border-b border-slate-800/40 pb-1.5"><span class="text-slate-400" x-text="i18n[currentLang].majorProtLabel"></span><span class="font-medium text-slate-200" x-text="selectedAirline.refundPolicy.majorScheduleChangeRefund ? i18n[currentLang].yes : i18n[currentLang].no"></span></div>
-                                                
                                                 <template x-if="viewMode === 'agent'">
-                                                    <div class="space-y-3 pt-3 border-t border-slate-800/60">
+                                                    <div class="space-y-3 pt-3">
                                                         <div class="flex justify-between border-b border-slate-800/40 pb-1.5"><span class="text-slate-400 text-xs" x-text="i18n[currentLang].adminPenLabel"></span><span class="font-medium text-slate-300 font-mono text-[11px] bg-slate-950 px-2 py-0.5 rounded border border-slate-800 text-right max-w-[190px] truncate" x-text="selectedAirline.refundPolicy.penalty"></span></div>
                                                         <div class="flex justify-between border-b border-slate-800/40 pb-1.5" x-show="selectedAirline.refundPolicy.refundWaiverCode"><span class="text-slate-400 text-xs" x-text="i18n[currentLang].cashRefLabel"></span><span class="font-mono text-[11px] font-bold text-emerald-400 bg-slate-950 px-2 py-0.5 rounded border border-slate-800" x-text="selectedAirline.refundPolicy.refundWaiverCode"></span></div>
-                                                        <div class="flex justify-between pb-0.5" x-show="selectedAirline.refundPolicy.osiTourCode"><span class="text-slate-400 text-xs" x-text="i18n[currentLang].gdsOsiLabel"></span><span class="font-mono text-[11px] font-bold text-sky-400 bg-slate-950 px-2 py-0.5 rounded border border-slate-800 max-w-[190px] truncate text-right" :title="selectedAirline.refundPolicy.osiTourCode" x-text="selectedAirline.refundPolicy.osiTourCode"></span></div>
                                                     </div>
                                                 </template>
                                             </div>
@@ -376,9 +413,6 @@
                             </template>
                             
                         </div>
-                    </template>
-                    <template x-if="!selectedAirline">
-                        <div class="bg-slate-900 border border-dashed border-slate-800 rounded-xl h-72 flex flex-col items-center justify-center text-slate-500 shadow-xl"><span class="text-4xl mb-3">✈️</span><span class="font-semibold text-slate-400" x-text="i18n[currentLang].noSelection"></span></div>
                     </template>
                 </div>
 
