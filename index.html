@@ -19,6 +19,7 @@
         isAdminMode: false,
         adminPasswordInput: '',
         isEditing: false,
+        viewMode: 'agent', // Options: 'agent' or 'customer'
         airlines: [],
         
         formAirline: {
@@ -191,13 +192,13 @@
                         </div>
 
                         <div class="border-t border-slate-800/80 pt-4 space-y-4">
-                            <h4 class="text-xs font-bold text-emerald-400 uppercase tracking-widest">Refund & GDS OSI Parameters Module</h4>
+                            <h4 class="text-xs font-bold text-emerald-400 uppercase tracking-widest">Refund Parameters Module</h4>
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                                 <div><label class="block text-xs font-semibold text-slate-400 mb-1">Significant Refund Threshold</label><input type="text" x-model="formAirline.refundPolicy.refundThreshold" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
                                 <div><label class="block text-xs font-semibold text-slate-400 mb-1">Involuntary Admin Fee / Penalties</label><input type="text" x-model="formAirline.refundPolicy.penalty" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
                                 <div><label class="block text-xs font-semibold text-slate-400 mb-1">GDS Cash Refund Waiver Code</label><input type="text" x-model="formAirline.refundPolicy.refundWaiverCode" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white focus:outline-none" /></div>
                                 
-                                <div class="md:col-span-3"><label class="block text-xs font-semibold text-emerald-400 mb-1">GDS OSI / Tour Code String Formatting</label><input type="text" x-model="formAirline.refundPolicy.osiTourCode" placeholder="e.g. OS AI SKCHG/AI 123 /29APR24 or specialized tour elements" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white focus:outline-none text-sm" /></div>
+                                <div class="md:col-span-3"><label class="block text-xs font-semibold text-emerald-400 mb-1">GDS OSI / Tour Code String Formatting</label><input type="text" x-model="formAirline.refundPolicy.osiTourCode" placeholder="e.g. OS AI SKCHG..." class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white focus:outline-none text-sm" /></div>
                             </div>
                             <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs font-medium text-slate-300 pt-1">
                                 <label class="flex items-center space-x-2"><input type="checkbox" x-model="formAirline.refundPolicy.refundAllowed" class="rounded bg-slate-950 text-emerald-500" /><span>Refund Allowed</span></label>
@@ -220,12 +221,13 @@
                                     <div class="text-4xl bg-slate-950 p-3 rounded-xl border border-slate-700 shadow-inner" x-text="selectedAirline.logo"></div>
                                     <div>
                                         <h2 class="text-2xl font-bold text-white tracking-tight" x-text="selectedAirline.airlineName"></h2>
-                                        <p class="text-xs text-slate-400 mt-0.5">GDS Fleet Identification Codes: IATA: <span class="text-sky-400 font-mono font-bold" x-text="selectedAirline.iata"></span> | ICAO: <span class="text-sky-400 font-mono font-bold" x-text="selectedAirline.icao"></span></p>
+                                        <p class="text-xs text-slate-400 mt-0.5">GDS Identification: IATA: <span class="text-sky-400 font-mono font-bold" x-text="selectedAirline.iata"></span> | ICAO: <span class="text-sky-400 font-mono font-bold" x-text="selectedAirline.icao"></span></p>
                                     </div>
                                 </div>
-                                <div class="text-right">
-                                    <span class="text-[10px] uppercase font-bold tracking-widest text-slate-500 block">Database Profile Valid</span>
-                                    <span class="text-sm font-mono text-indigo-300 font-medium" x-text="selectedAirline.lastUpdated"></span>
+                                
+                                <div class="flex items-center bg-slate-950 border border-slate-800 p-1 rounded-lg">
+                                    <button @click="viewMode = 'customer'" :class="viewMode === 'customer' ? 'bg-sky-600 text-white font-bold' : 'text-slate-400 hover:text-slate-200'" class="px-3 py-1.5 rounded-md text-xs transition font-semibold uppercase tracking-wider">👤 Passenger View</button>
+                                    <button @click="viewMode = 'agent'" :class="viewMode === 'agent' ? 'bg-indigo-600 text-white font-bold' : 'text-slate-400 hover:text-slate-200'" class="px-3 py-1.5 rounded-md text-xs transition font-semibold uppercase tracking-wider">🎧 Agent View</button>
                                 </div>
                             </div>
 
@@ -244,20 +246,24 @@
                                     <div class="space-y-3 text-sm">
                                         <div class="flex justify-between border-b border-slate-800/40 pb-1.5"><span class="text-slate-400">Minor Change Profile</span><span class="font-medium text-slate-200" x-text="selectedAirline.scheduleChange.minorChange || 'None Defined'"></span></div>
                                         <div class="flex justify-between border-b border-slate-800/40 pb-1.5"><span class="text-slate-400">Major Change Profile</span><span class="font-medium text-slate-200" x-text="selectedAirline.scheduleChange.majorChange || 'None Defined'"></span></div>
-                                        <div class="flex justify-between border-b border-slate-800/40 pb-1.5"><span class="text-slate-400">Cabin Matching Rules</span><span class="font-medium text-slate-200" x-text="selectedAirline.scheduleChange.sameCabin ? 'Strict Balance Required' : 'Alternative Class Permitted'"></span></div>
-                                        <div class="flex justify-between border-b border-slate-800/40 pb-1.5"><span class="text-slate-400">Booking Class (RBD)</span><span class="font-medium text-slate-200" x-text="selectedAirline.scheduleChange.sameBookingClass ? 'Exact RBD Match Required' : 'Lowest Class Allowed'"></span></div>
-                                        <div class="flex justify-between border-b border-slate-800/40 pb-1.5"><span class="text-slate-400">Inventory Fallback Target</span><span class="font-medium text-indigo-300 font-mono text-xs bg-slate-950 px-2 py-0.5 rounded border border-slate-800" x-text="selectedAirline.scheduleChange.lowestAvailableClass || 'N/A'"></span></div>
-                                        <div class="flex justify-between border-b border-slate-800/40 pb-1.5"><span class="text-slate-400">Ticket Reissue Required</span><span :class="selectedAirline.scheduleChange.ticketReissue ? 'text-amber-400' : 'text-slate-400'" class="font-semibold" x-text="selectedAirline.scheduleChange.ticketReissue ? 'YES - Reissue Needed' : 'NO - Authority Waiver Only'"></span></div>
-                                        <div class="flex justify-between border-b border-slate-800/40 pb-1.5"><span class="text-slate-400">GDS Endorsement Waiver</span><span :class="selectedAirline.scheduleChange.waiverRequired ? 'text-amber-400' : 'text-emerald-400'" class="font-semibold" x-text="selectedAirline.scheduleChange.waiverRequired ? 'Mandatory Waiver Code' : 'Automated Verification Code'"></span></div>
                                         
-                                        <div class="flex justify-between border-b border-slate-800/40 pb-1.5" x-show="selectedAirline.scheduleChange.endorsementCode">
-                                            <span class="text-slate-400">Endorsement Box Waiver Text</span>
-                                            <span class="font-mono text-xs font-bold text-amber-400 bg-slate-950 px-2 py-0.5 rounded border border-slate-800" x-text="selectedAirline.scheduleChange.endorsementCode"></span>
-                                        </div>
-                                        <div class="flex justify-between pb-0.5" x-show="selectedAirline.scheduleChange.geoAllowance">
-                                            <span class="text-slate-400">Geo Airport Allowance Map</span>
-                                            <span class="font-medium text-slate-200" x-text="selectedAirline.scheduleChange.geoAllowance"></span>
-                                        </div>
+                                        <template x-if="viewMode === 'agent'">
+                                            <div class="space-y-3 pt-3 border-t border-slate-800/60">
+                                                <div class="flex justify-between border-b border-slate-800/40 pb-1.5"><span class="text-slate-400 text-xs">Cabin Matching Rules</span><span class="font-medium text-slate-300 text-xs" x-text="selectedAirline.scheduleChange.sameCabin ? 'Strict Balance Required' : 'Alternative Class Permitted'"></span></div>
+                                                <div class="flex justify-between border-b border-slate-800/40 pb-1.5"><span class="text-slate-400 text-xs">Booking Class (RBD)</span><span class="font-medium text-slate-300 text-xs" x-text="selectedAirline.scheduleChange.sameBookingClass ? 'Exact RBD Match Required' : 'Lowest Class Allowed'"></span></div>
+                                                <div class="flex justify-between border-b border-slate-800/40 pb-1.5"><span class="text-slate-400 text-xs">Inventory Fallback Target</span><span class="font-medium text-indigo-300 font-mono text-[11px] bg-slate-950 px-2 py-0.5 rounded border border-slate-800" x-text="selectedAirline.scheduleChange.lowestAvailableClass || 'N/A'"></span></div>
+                                                <div class="flex justify-between border-b border-slate-800/40 pb-1.5"><span class="text-slate-400 text-xs">Ticket Reissue Required</span><span :class="selectedAirline.scheduleChange.ticketReissue ? 'text-amber-400' : 'text-slate-400'" class="font-semibold text-xs" x-text="selectedAirline.scheduleChange.ticketReissue ? 'YES - Reissue Needed' : 'NO - Authority Waiver Only'"></span></div>
+                                                <div class="flex justify-between border-b border-slate-800/40 pb-1.5"><span class="text-slate-400 text-xs">GDS Endorsement Waiver</span><span :class="selectedAirline.scheduleChange.waiverRequired ? 'text-amber-400' : 'text-emerald-400'" class="font-semibold text-xs" x-text="selectedAirline.scheduleChange.waiverRequired ? 'Mandatory Waiver Code' : 'Automated Verification Code'"></span></div>
+                                                <div class="flex justify-between border-b border-slate-800/40 pb-1.5" x-show="selectedAirline.scheduleChange.endorsementCode">
+                                                    <span class="text-slate-400 text-xs">Endorsement Box Text</span>
+                                                    <span class="font-mono text-[11px] font-bold text-amber-400 bg-slate-950 px-2 py-0.5 rounded border border-slate-800" x-text="selectedAirline.scheduleChange.endorsementCode"></span>
+                                                </div>
+                                                <div class="flex justify-between pb-0.5" x-show="selectedAirline.scheduleChange.geoAllowance">
+                                                    <span class="text-slate-400 text-xs">Geo Deviation Map</span>
+                                                    <span class="font-medium text-slate-300 text-xs" x-text="selectedAirline.scheduleChange.geoAllowance"></span>
+                                                </div>
+                                            </div>
+                                        </template>
                                     </div>
                                 </div>
 
@@ -266,21 +272,23 @@
                                         <span class="text-lg">💰</span><h3 class="text-sm font-bold text-emerald-400 uppercase tracking-wider">Refund Protocols</h3>
                                     </div>
                                     <div class="space-y-3 text-sm">
-                                        <div class="flex justify-between border-b border-slate-800/40 pb-1.5"><span class="text-slate-400">Involuntary Cancellation Refund</span><span class="font-medium text-emerald-400" x-text="selectedAirline.refundPolicy.cancellationRefund ? 'Full Refund Authorized' : 'Credit Shell Voucher'"></span></div>
+                                        <div class="flex justify-between border-b border-slate-800/40 pb-1.5"><span class="text-slate-400">Involuntary Cancel Refund</span><span class="font-medium text-emerald-400" x-text="selectedAirline.refundPolicy.cancellationRefund ? 'Full Refund Authorized' : 'Credit Shell Voucher'"></span></div>
                                         <div class="flex justify-between border-b border-slate-800/40 pb-1.5"><span class="text-slate-400">Significant Change Trigger</span><span class="font-medium text-slate-200" x-text="selectedAirline.refundPolicy.refundThreshold || 'N/A'"></span></div>
                                         <div class="flex justify-between border-b border-slate-800/40 pb-1.5"><span class="text-slate-400">Major Change Protection</span><span class="font-medium text-slate-200" x-text="selectedAirline.refundPolicy.majorScheduleChangeRefund ? 'Fully Covered' : 'Subject to Assessment'"></span></div>
-                                        <div class="flex justify-between border-b border-slate-800/40 pb-1.5"><span class="text-slate-400">Involuntary Admin Penalties</span><span class="font-medium text-slate-200 font-mono text-xs bg-slate-950 px-2 py-0.5 rounded border border-slate-800" x-text="selectedAirline.refundPolicy.penalty || 'None'"></span></div>
-                                        <div class="flex justify-between border-b border-slate-800/40 pb-1.5" x-show="false"><span class="text-slate-400">GDS Refund Waiver Injection</span><span :class="selectedAirline.refundPolicy.waiverRequired ? 'text-amber-400' : 'text-emerald-400'" class="font-semibold" x-text="selectedAirline.refundPolicy.waiverRequired ? 'Waiver Input Mandatory' : 'System Validation Exempt'"></span></div>
                                         
-                                        <div class="flex justify-between border-b border-slate-800/40 pb-1.5" x-show="selectedAirline.refundPolicy.refundWaiverCode">
-                                            <span class="text-slate-400">GDS Cash Refund Waiver Code</span>
-                                            <span class="font-mono text-xs font-bold text-emerald-400 bg-slate-950 px-2 py-0.5 rounded border border-slate-800" x-text="selectedAirline.refundPolicy.refundWaiverCode"></span>
-                                        </div>
-                                        
-                                        <div class="flex justify-between pb-0.5" x-show="selectedAirline.refundPolicy.osiTourCode">
-                                            <span class="text-slate-400">GDS OSI / Tour Code Box</span>
-                                            <span class="font-mono text-xs font-bold text-sky-400 bg-slate-950 px-2 py-0.5 rounded border border-slate-800 max-w-[210px] text-right truncate" :title="selectedAirline.refundPolicy.osiTourCode" x-text="selectedAirline.refundPolicy.osiTourCode"></span>
-                                        </div>
+                                        <template x-if="viewMode === 'agent'">
+                                            <div class="space-y-3 pt-3 border-t border-slate-800/60">
+                                                <div class="flex justify-between border-b border-slate-800/40 pb-1.5"><span class="text-slate-400 text-xs">Involuntary Admin Penalties</span><span class="font-medium text-slate-300 font-mono text-[11px] bg-slate-950 px-2 py-0.5 rounded border border-slate-800 max-w-[190px] truncate text-right" x-text="selectedAirline.refundPolicy.penalty || 'None'"></span></div>
+                                                <div class="flex justify-between border-b border-slate-800/40 pb-1.5" x-show="selectedAirline.refundPolicy.refundWaiverCode">
+                                                    <span class="text-slate-400 text-xs">GDS Refund Waiver Code</span>
+                                                    <span class="font-mono text-[11px] font-bold text-emerald-400 bg-slate-950 px-2 py-0.5 rounded border border-slate-800" x-text="selectedAirline.refundPolicy.refundWaiverCode"></span>
+                                                </div>
+                                                <div class="flex justify-between pb-0.5" x-show="selectedAirline.refundPolicy.osiTourCode">
+                                                    <span class="text-slate-400 text-xs">GDS OSI / Tour Code Box</span>
+                                                    <span class="font-mono text-[11px] font-bold text-sky-400 bg-slate-950 px-2 py-0.5 rounded border border-slate-800 max-w-[190px] truncate text-right" :title="selectedAirline.refundPolicy.osiTourCode" x-text="selectedAirline.refundPolicy.osiTourCode"></span>
+                                                </div>
+                                            </div>
+                                        </template>
                                     </div>
                                 </div>
                             </div>
