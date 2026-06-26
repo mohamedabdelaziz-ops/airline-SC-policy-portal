@@ -1,153 +1,39 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Disruption Desk - Airline Policy Portal</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-</head>
-<body class="bg-slate-950 text-slate-100 font-sans antialiased selection:bg-sky-500 selection:text-white">
-
-    <div x-data="{
-        searchQuery: '',
-        filterSameCabin: false,
-        filterSameClass: false,
-        filterOalAllowed: false,
-        filterRefundAllowed: false,
-        selectedAirline: null,
-        isAdminMode: false,
-        adminPasswordInput: '',
-        isEditing: false,
-        airlines: [],
-        
-        formAirline: {
-            airlineName: '', iata: '', icao: '', logo: '✈️', lastUpdated: '2026-06-26',
-            scheduleChange: { minorChange: '', majorChange: '', threshold: '', travelWindow: '', sameCabin: false, sameBookingClass: false, lowestAvailableClass: '', oalAllowed: false, ticketReissue: false, waiverRequired: false, endorsementCode: '', geoAllowance: '' },
-            refundPolicy: { refundAllowed: false, refundThreshold: '', cancellationRefund: false, majorScheduleChangeRefund: false, penalty: 'None', waiverRequired: false, refundWaiverCode: '' }
+this.airlines = [
+    {
+        airlineName: 'Air Canada', iata: 'AC', icao: 'ACA', logo: '✈️', lastUpdated: '2026-06-26',
+        scheduleChange: { minorChange: 'Less than 60 minutes', majorChange: '60 minutes or more', threshold: '60 minutes', travelWindow: '+/-7 days', sameCabin: true, sameBookingClass: true, lowestAvailableClass: 'Same RBD Preferred', oalAllowed: false, ticketReissue: true, waiverRequired: true },
+        refundPolicy: { refundAllowed: true, refundThreshold: '120 minutes', cancellationRefund: true, majorScheduleChangeRefund: true, penalty: 'None', waiverRequired: true }
+    },
+    {
+        airlineName: 'Delta Air Lines', iata: 'DL', icao: 'DAL', logo: '📐', lastUpdated: '2026-06-20',
+        scheduleChange: { minorChange: 'Less than 60 minutes', majorChange: '60 minutes or more', threshold: '60 minutes', travelWindow: '+/-2 days', sameCabin: true, sameBookingClass: true, lowestAvailableClass: 'Main Cabin Lowest', oalAllowed: true, ticketReissue: true, waiverRequired: false },
+        refundPolicy: { refundAllowed: true, refundThreshold: '180 minutes', cancellationRefund: true, majorScheduleChangeRefund: true, penalty: 'None', waiverRequired: false }
+    },
+    {
+        airlineName: 'WestJet Airlines',
+        iata: 'WS',
+        icao: 'WJA',
+        logo: '🍁',
+        lastUpdated: '2026-06-26',
+        scheduleChange: {
+            minorChange: 'Less than 181 minutes',
+            majorChange: '181 minutes or more (3+ Hours)',
+            threshold: '181 minutes',
+            travelWindow: '+/-2 days',
+            sameCabin: true,
+            sameBookingClass: false,
+            lowestAvailableClass: 'Next highest up to Y (Eco) / W (Prem) / J (Biz)',
+            oalAllowed: true,
+            ticketReissue: true,
+            waiverRequired: true
         },
-
-        init() {
-            this.airlines = [
-                {
-                    airlineName: 'Air Canada', iata: 'AC', icao: 'ACA', logo: '✈️', lastUpdated: '2026-06-26',
-                    scheduleChange: { minorChange: 'Less than 60 minutes', majorChange: '60 minutes or more', threshold: '60 minutes', travelWindow: '+/-7 days', sameCabin: true, sameBookingClass: true, lowestAvailableClass: 'Same RBD Preferred', oalAllowed: false, ticketReissue: true, waiverRequired: true, endorsementCode: 'ACSKCHG', geoAllowance: 'Involuntary Reroute Rules Only' },
-                    refundPolicy: { refundAllowed: true, refundThreshold: '120 minutes', cancellationRefund: true, majorScheduleChangeRefund: true, penalty: 'None', waiverRequired: true, refundWaiverCode: 'ACREFUNDS' }
-                },
-                {
-                    airlineName: 'Delta Air Lines', iata: 'DL', icao: 'DAL', logo: '📐', lastUpdated: '2026-06-20',
-                    scheduleChange: { minorChange: 'Less than 60 minutes', majorChange: '60 minutes or more', threshold: '60 minutes', travelWindow: '+/-2 days', sameCabin: true, sameBookingClass: true, lowestAvailableClass: 'Main Cabin Lowest', oalAllowed: true, ticketReissue: true, waiverRequired: false, endorsementCode: 'SKCHG DL', geoAllowance: 'Co-terminal options permitted' },
-                    refundPolicy: { refundAllowed: true, refundThreshold: '180 minutes', cancellationRefund: true, majorScheduleChangeRefund: true, penalty: 'None', waiverRequired: false, refundWaiverCode: 'DL INVOL REF' }
-                },
-                {
-                    airlineName: 'Air India', iata: 'AI', icao: 'AIC', logo: '🦁', lastUpdated: '2026-06-26',
-                    scheduleChange: { 
-                        minorChange: 'Intl < 120 min / Dom < 60 min', 
-                        majorChange: 'Intl >= 120 min / Dom >= 60 min', 
-                        threshold: 'Intl: 120m | Dom: 60m', 
-                        travelWindow: '7 days (-1 / +6 days)', 
-                        sameCabin: true, 
-                        sameBookingClass: false, 
-                        lowestAvailableClass: 'Same RBD preferred; otherwise next higher available RBD in same cabin', 
-                        oalAllowed: true, 
-                        ticketReissue: true, 
-                        waiverRequired: true, 
-                        endorsementCode: 'SKCHG/AI XXXX(flight number)/DDMMMYY OF(TRAVEL SECTOR)', 
-                        geoAllowance: 'Allowed to alternate airport in the same country (Pax arranges transit)' 
-                    },
-                    refundPolicy: { 
-                        refundAllowed: true, 
-                        refundThreshold: 'Intl: 2 hours | Dom: 1 hour', 
-                        cancellationRefund: true, 
-                        majorScheduleChangeRefund: true, 
-                        penalty: 'Downselling of RBD/FARE not permitted. Fare Calculation begins with S-', 
-                        waiverRequired: true, 
-                        refundWaiverCode: 'Waiver Box: SKCHG/AI XXXX(flight)/DDMMMYY OF(SECTOR)' 
-                    }
-                }
-            ];
-            this.selectedAirline = this.airlines[0];
-        },
-        get filteredAirlines() {
-            return this.airlines.filter(airline => {
-                const matchesSearch = airline.airlineName.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-                                      airline.iata.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-                                      airline.icao.toLowerCase().includes(this.searchQuery.toLowerCase());
-                return matchesSearch && (!this.filterSameCabin || airline.scheduleChange.sameCabin) && (!this.filterSameClass || airline.scheduleChange.sameBookingClass) && (!this.filterOalAllowed || airline.scheduleChange.oalAllowed) && (!this.filterRefundAllowed || airline.refundPolicy.refundAllowed);
-            });
-        },
-        verifyAdmin() {
-            if(this.adminPasswordInput === 'admin123') {
-                this.isAdminMode = true;
-                this.adminPasswordInput = '';
-            } else { alert('Access Denied: Incorrect Security Token'); }
-        },
-        resetForm() {
-            this.formAirline = {
-                airlineName: '', iata: '', icao: '', logo: '✈️', lastUpdated: '2026-06-26',
-                scheduleChange: { minorChange: '', majorChange: '', threshold: '', travelWindow: '', sameCabin: false, sameBookingClass: false, lowestAvailableClass: '', oalAllowed: false, ticketReissue: false, waiverRequired: false, endorsementCode: '', geoAllowance: '' },
-                refundPolicy: { refundAllowed: false, refundThreshold: '', cancellationRefund: false, majorScheduleChangeRefund: false, penalty: 'None', waiverRequired: false, refundWaiverCode: '' }
-            };
-            this.isEditing = false;
-        },
-        saveAirline() {
-            if(!this.formAirline.airlineName || !this.formAirline.iata) return alert('Airline Name and IATA Code are required.');
-            this.formAirline.iata = this.formAirline.iata.toUpperCase();
-            this.formAirline.icao = this.formAirline.icao.toUpperCase();
-            
-            if(this.isEditing) {
-                const idx = this.airlines.findIndex(a => a.iata === this.formAirline.iata);
-                if(idx !== -1) this.airlines[idx] = JSON.parse(JSON.stringify(this.formAirline));
-            } else {
-                this.airlines.push(JSON.parse(JSON.stringify(this.formAirline)));
-            }
-            this.selectedAirline = this.airlines[this.airlines.length - 1];
-            this.resetForm();
-        },
-        editAirline(airline) {
-            this.formAirline = JSON.parse(JSON.stringify(airline));
-            this.isEditing = true;
-        },
-        deleteAirline(iata) {
-            if(confirm('Are you absolute sure you want to completely erase this carrier database file?')) {
-                this.airlines = this.airlines.filter(a => a.iata !== iata);
-                this.selectedAirline = this.airlines[0] || null;
-            }
+        refundPolicy: {
+            refundAllowed: true,
+            refundThreshold: '181 minutes',
+            cancellationRefund: true,
+            majorScheduleChangeRefund: true,
+            penalty: 'Taxes L8/DO non-refundable for PUJ/POP/AZS/LRM',
+            waiverRequired: true
         }
-    }" class="min-h-screen flex flex-col">
-
-        <nav class="border-b border-slate-800 bg-slate-900/50 backdrop-blur-md sticky top-0 z-50 px-6 py-4 flex justify-between items-center">
-            <div class="flex items-center space-x-3">
-                <span class="text-2xl">🌐</span>
-                <div>
-                    <h1 class="text-xl font-bold bg-gradient-to-r from-sky-400 to-indigo-400 bg-clip-text text-transparent">DISRUPTION DESK</h1>
-                    <p class="text-xs text-slate-400 font-medium">Airline Schedule Change & Refund Reference Hub</p>
-                </div>
-            </div>
-            
-            <div class="flex items-center space-x-4">
-                <div x-show="!isAdminMode" class="flex items-center space-x-2 bg-slate-900 p-1 border border-slate-800 rounded-lg">
-                    <input type="password" placeholder="Admin Key..." x-model="adminPasswordInput" @keyup.enter="verifyAdmin()" class="bg-slate-950 border-0 outline-none text-xs px-3 py-1.5 rounded text-white w-28 placeholder-slate-600 focus:ring-1 focus:ring-sky-500" />
-                    <button @click="verifyAdmin()" class="bg-slate-800 hover:bg-sky-600 text-white font-bold text-[10px] px-3 py-1.5 rounded transition uppercase tracking-wider">Auth</button>
-                </div>
-                <div x-show="isAdminMode" class="flex items-center space-x-2">
-                    <span class="text-xs font-mono px-2 py-1 rounded bg-amber-500/10 border border-amber-500/30 text-amber-400 font-bold">🛠️ ADMIN MASTER</span>
-                    <button @click="isAdminMode = false; resetForm()" class="text-xs border border-slate-700 bg-slate-800 hover:bg-rose-600 text-white px-3 py-1 rounded transition">Lock</button>
-                </div>
-            </div>
-        </nav>
-
-        <main class="max-w-7xl mx-auto p-6 lg:p-8 grid grid-cols-1 lg:grid-cols-4 gap-8 flex-1 w-full">
-            
-            <div class="lg:col-span-1 space-y-6">
-                <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-xl space-y-4">
-                    <div>
-                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Search Fleet Index</label>
-                        <input type="text" placeholder="Carrier, IATA, ICAO..." x-model="searchQuery" class="w-full px-4 py-2 bg-slate-950 border border-slate-700 rounded-lg text-white placeholder-slate-500 transition text-sm focus:outline-none focus:ring-2 focus:ring-sky-500" />
-                    </div>
-                    
-                    <div class="space-y-2 pt-2 border-t border-slate-800 text-sm text-slate-300">
-                        <label class="flex items-center space-x-3 cursor-pointer hover:text-white"><input type="checkbox" x-model="filterSameCabin" class="rounded bg-slate-950 border-slate-700 text-sky-500 w-4 h-4" /><span>Same Cabin</span></label>
-                        <label class="flex items-center space-x-3 cursor-pointer hover:text-white"><input type="checkbox" x-model="filterSameClass" class="rounded bg-slate-950 border-slate-700 text-sky-500 w-4 h-4" /><span>Same RBD</span></label>
-                        <label class="flex items-center space-x-3 cursor-pointer hover:text-white"><input type="checkbox" x-model="filterOalAllowed" class="rounded bg-slate-950 border-slate-700 text-sky-500 w-4 h-4" /><span>OAL Allowed</span></label>
-                        <label class="flex items-center space-x-3 cursor-pointer hover:text-white"><input type="checkbox" x-model="filterRefundAllowed" class="rounded bg-slate
+    }
+];
