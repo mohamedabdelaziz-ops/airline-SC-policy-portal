@@ -39,6 +39,32 @@
                     airlineName: 'Delta Air Lines', iata: 'DL', icao: 'DAL', logo: '📐', lastUpdated: '2026-06-20',
                     scheduleChange: { minorChange: 'Less than 60 minutes', majorChange: '60 minutes or more', threshold: '60 minutes', travelWindow: '+/-2 days', sameCabin: true, sameBookingClass: true, lowestAvailableClass: 'Main Cabin Lowest', oalAllowed: true, ticketReissue: true, waiverRequired: false, endorsementCode: 'SKCHG DL', geoAllowance: 'Co-terminal options' },
                     refundPolicy: { refundAllowed: true, refundThreshold: '180 minutes', cancellationRefund: true, majorScheduleChangeRefund: true, penalty: 'None', waiverRequired: false, refundWaiverCode: 'DL INVOL REF' }
+                },
+                {
+                    airlineName: 'Air India', iata: 'AI', icao: 'AIC', logo: '🦁', lastUpdated: '2026-06-26',
+                    scheduleChange: { 
+                        minorChange: 'Intl < 120 min / Dom < 60 min', 
+                        majorChange: 'Intl >= 120 min / Dom >= 60 min', 
+                        threshold: 'Intl: 120m | Dom: 60m', 
+                        travelWindow: '7 days (-1 / +6 days)', 
+                        sameCabin: true, 
+                        sameBookingClass: false, 
+                        lowestAvailableClass: 'Same RBD preferred; otherwise next higher available RBD in same cabin', 
+                        oalAllowed: true, 
+                        ticketReissue: true, 
+                        waiverRequired: true, 
+                        endorsementCode: 'SKCHG/AI XXXX(flight number)/DDMMMYY OF(TRAVEL SECTOR)', 
+                        geoAllowance: 'Allowed to alternate airport in the same country (Pax arranges transit)' 
+                    },
+                    refundPolicy: { 
+                        refundAllowed: true, 
+                        refundThreshold: 'Intl: 2 hours | Dom: 1 hour', 
+                        cancellationRefund: true, 
+                        majorScheduleChangeRefund: true, 
+                        penalty: 'Downselling of RBD/FARE not permitted. Fare Calculation begins with S-', 
+                        waiverRequired: true, 
+                        refundWaiverCode: 'Waiver Box: SKCHG/AI XXXX(flight)/DDMMMYY OF(SECTOR)' 
+                    }
                 }
             ];
             this.selectedAirline = this.airlines[0];
@@ -237,53 +263,4 @@
                                         <span class="text-lg">🔄</span><h3 class="text-sm font-bold text-sky-400 uppercase tracking-wider">Schedule Change Framework</h3>
                                     </div>
                                     <div class="space-y-3 text-sm">
-                                        <div class="flex justify-between border-b border-slate-800/40 pb-1.5"><span class="text-slate-400">Minor Change Profile</span><span class="font-medium text-slate-200" x-text="selectedAirline.scheduleChange.minorChange || 'None Defined'"></span></div>
-                                        <div class="flex justify-between border-b border-slate-800/40 pb-1.5"><span class="text-slate-400">Major Change Profile</span><span class="font-medium text-slate-200" x-text="selectedAirline.scheduleChange.majorChange || 'None Defined'"></span></div>
-                                        <div class="flex justify-between border-b border-slate-800/40 pb-1.5"><span class="text-slate-400">Cabin Matching Rules</span><span class="font-medium text-slate-200" x-text="selectedAirline.scheduleChange.sameCabin ? 'Strict Balance Required' : 'Alternative Class Permitted'"></span></div>
-                                        <div class="flex justify-between border-b border-slate-800/40 pb-1.5"><span class="text-slate-400">Booking Class (RBD)</span><span class="font-medium text-slate-200" x-text="selectedAirline.scheduleChange.sameBookingClass ? 'Exact RBD Match Required' : 'Lowest Class Allowed'"></span></div>
-                                        <div class="flex justify-between border-b border-slate-800/40 pb-1.5"><span class="text-slate-400">Inventory Fallback Target</span><span class="font-medium text-indigo-300 font-mono text-xs bg-slate-950 px-2 py-0.5 rounded border border-slate-800" x-text="selectedAirline.scheduleChange.lowestAvailableClass || 'N/A'"></span></div>
-                                        <div class="flex justify-between border-b border-slate-800/40 pb-1.5"><span class="text-slate-400">Ticket Reissue Required</span><span :class="selectedAirline.scheduleChange.ticketReissue ? 'text-amber-400' : 'text-slate-400'" class="font-semibold" x-text="selectedAirline.scheduleChange.ticketReissue ? 'YES - Reissue Needed' : 'NO - Authority Waiver Only'"></span></div>
-                                        <div class="flex justify-between border-b border-slate-800/40 pb-1.5"><span class="text-slate-400">GDS Endorsement Waiver</span><span :class="selectedAirline.scheduleChange.waiverRequired ? 'text-amber-400' : 'text-emerald-400'" class="font-semibold" x-text="selectedAirline.scheduleChange.waiverRequired ? 'Mandatory Waiver Code' : 'Automated Verification Code'"></span></div>
-                                        
-                                        <div class="flex justify-between border-b border-slate-800/40 pb-1.5" x-show="selectedAirline.scheduleChange.endorsementCode">
-                                            <span class="text-slate-400">Endorsement Box Waiver</span>
-                                            <span class="font-mono text-xs font-bold text-amber-400 bg-slate-950 px-2 py-0.5 rounded border border-slate-800" x-text="selectedAirline.scheduleChange.endorsementCode"></span>
-                                        </div>
-                                        <div class="flex justify-between pb-0.5" x-show="selectedAirline.scheduleChange.geoAllowance">
-                                            <span class="text-slate-400">Geo Airport Deviation Allowance</span>
-                                            <span class="font-medium text-slate-200" x-text="selectedAirline.scheduleChange.geoAllowance"></span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="bg-slate-900 p-6 rounded-xl border border-slate-800 shadow-xl space-y-4">
-                                    <div class="flex items-center space-x-2 border-b border-slate-800 pb-3">
-                                        <span class="text-lg">💰</span><h3 class="text-sm font-bold text-emerald-400 uppercase tracking-wider">Refund Protocols</h3>
-                                    </div>
-                                    <div class="space-y-3 text-sm">
-                                        <div class="flex justify-between border-b border-slate-800/40 pb-1.5"><span class="text-slate-400">Involuntary Cancellation Refund</span><span class="font-medium text-emerald-400" x-text="selectedAirline.refundPolicy.cancellationRefund ? 'Full Refund Authorized' : 'Credit Shell Voucher'"></span></div>
-                                        <div class="flex justify-between border-b border-slate-800/40 pb-1.5"><span class="text-slate-400">Significant Change Trigger</span><span class="font-medium text-slate-200" x-text="selectedAirline.refundPolicy.refundThreshold || 'N/A'"></span></div>
-                                        <div class="flex justify-between border-b border-slate-800/40 pb-1.5"><span class="text-slate-400">Major Change Protection</span><span class="font-medium text-slate-200" x-text="selectedAirline.refundPolicy.majorScheduleChangeRefund ? 'Fully Covered' : 'Subject to Assessment'"></span></div>
-                                        <div class="flex justify-between border-b border-slate-800/40 pb-1.5"><span class="text-slate-400">Involuntary Admin Penalties</span><span class="font-medium text-slate-200 font-mono text-xs bg-slate-950 px-2 py-0.5 rounded border border-slate-800" x-text="selectedAirline.refundPolicy.penalty || 'None'"></span></div>
-                                        <div class="flex justify-between border-b border-slate-800/40 pb-1.5"><span class="text-slate-400">GDS Refund Waiver Injection</span><span :class="selectedAirline.refundPolicy.waiverRequired ? 'text-amber-400' : 'text-emerald-400'" class="font-semibold" x-text="selectedAirline.refundPolicy.waiverRequired ? 'Waiver Input Mandatory' : 'System Validation Exempt'"></span></div>
-                                        
-                                        <div class="flex justify-between pb-0.5" x-show="selectedAirline.refundPolicy.refundWaiverCode">
-                                            <span class="text-slate-400">GDS Cash Refund Waiver Code</span>
-                                            <span class="font-mono text-xs font-bold text-emerald-400 bg-slate-950 px-2 py-0.5 rounded border border-slate-800" x-text="selectedAirline.refundPolicy.refundWaiverCode"></span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </template>
-                    <template x-if="!selectedAirline">
-                        <div class="bg-slate-900 border border-dashed border-slate-800 rounded-xl h-72 flex flex-col items-center justify-center text-slate-500 shadow-xl"><span class="text-4xl mb-3">✈️</span><span class="font-semibold text-slate-400">No Carrier Selection Detected</span></div>
-                    </template>
-                </div>
-
-            </div>
-        </main>
-    </div>
-
-</body>
-</html>
+                                        <div class="flex justify-between border-b border-slate
