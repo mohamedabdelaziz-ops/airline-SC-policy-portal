@@ -244,15 +244,9 @@
                     <button @click="currentLang = 'fr'" :class="currentLang === 'fr' ? 'bg-sky-600 font-bold text-white' : 'text-slate-400 hover:text-white'" class="px-2 py-1 rounded text-xs transition">FR</button>
                 </div>
 
-                <div class="flex items-center">
-                    <div x-show="!isAdminMode" class="flex items-center space-x-1.5 bg-slate-900 p-1 border border-slate-800 rounded-lg shadow-inner">
-                        <input type="password" placeholder="Key..." x-model="adminPasswordInput" @keyup.enter="verifyAdmin()" class="bg-slate-950 border-0 outline-none text-xs px-2.5 py-1 rounded text-white w-20 placeholder-slate-700 focus:ring-1 focus:ring-sky-500" />
-                        <button @click="verifyAdmin()" class="bg-slate-800 hover:bg-sky-600 text-white font-bold text-[10px] px-3 py-1 rounded transition uppercase tracking-wider">Auth</button>
-                    </div>
-                    <div x-show="isAdminMode" class="flex items-center space-x-2">
-                        <span class="text-[10px] font-mono px-2 py-1 rounded bg-amber-500/10 border border-amber-500/30 text-amber-400 font-bold tracking-wider">🛠️ MASTER</span>
-                        <button @click="isAdminMode = false; resetForm()" class="text-[10px] font-bold border border-slate-700 bg-slate-800 hover:bg-rose-600 text-white px-2.5 py-1 rounded transition uppercase">Lock</button>
-                    </div>
+                <div class="flex items-center bg-slate-900 p-1 border border-slate-800 rounded-lg">
+                    <input type="password" placeholder="Admin Key..." x-model="adminPasswordInput" @keyup.enter="verifyAdmin()" class="bg-slate-950 border-0 outline-none text-xs px-2 py-1 rounded text-white w-20 focus:ring-1 focus:ring-sky-500" />
+                    <button @click="verifyAdmin()" class="bg-slate-800 hover:bg-sky-600 text-white font-bold text-[10px] px-2 py-1 rounded ml-1 transition">Auth</button>
                 </div>
             </div>
         </nav>
@@ -289,14 +283,11 @@
 
                 <div x-show="isAdminMode" class="bg-slate-900 border border-amber-500/20 rounded-xl p-6 shadow-2xl space-y-6">
                     <div class="flex justify-between items-center border-b border-slate-800 pb-3">
-                        <h3 class="font-bold text-sm text-amber-400 uppercase tracking-wider" x-text="isEditing ? 'Modify Carrier Profiles Matrix' : 'Inject New Fleet Policy Ruleset'"></h3>
-                        <button @click="resetForm()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white px-3 py-1 rounded">Clear Form</button>
+                        <h3 class="font-bold text-sm text-amber-400 uppercase tracking-wider">Inject New Fleet Policy Ruleset</h3>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-xs">
                         <div><label class="block font-semibold text-slate-400 mb-1">Airline Name</label><input type="text" x-model="formAirline.airlineName" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
-                        <div><label class="block font-semibold text-slate-400 mb-1">IATA Code</label><input type="text" x-model="formAirline.iata" :disabled="isEditing" placeholder="WS" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white disabled:opacity-40" /></div>
-                        <div><label class="block font-semibold text-slate-400 mb-1">ICAO Code</label><input type="text" x-model="formAirline.icao" placeholder="WJA" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
-                        <div><label class="block font-semibold text-slate-400 mb-1">Emoji Logo</label><input type="text" x-model="formAirline.logo" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white text-center" /></div>
+                        <div><label class="block font-semibold text-slate-400 mb-1">IATA Code</label><input type="text" x-model="formAirline.iata" placeholder="AI" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
                     </div>
                     <button @click="saveAirline()" class="w-full py-3 bg-gradient-to-r from-amber-500 to-orange-600 text-slate-950 font-bold uppercase text-xs tracking-wider rounded-lg shadow-lg hover:from-amber-400 hover:to-orange-500 transition">Save Data Object to Fleet Index</button>
                 </div>
