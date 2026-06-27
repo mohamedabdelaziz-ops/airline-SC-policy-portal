@@ -100,6 +100,43 @@
         init() {
             this.airlines = [
                 {
+                    airlineName: 'Lufthansa Group', iata: 'LH', icao: 'DLH', logo: '🇩🇪', lastUpdated: '2026-06-27',
+                    scheduleChange: { 
+                        minorChange: 'Time deviations below airline-defined threshold limits.', 
+                        majorChange: 'Significant operation adjustments or scheduling cancellations.', 
+                        threshold: 'Varies by destination routing attributes', 
+                        travelWindow: 'Subject to inventory reinstatement controls.', 
+                        sameCabin: 'Strict Cabin Balance Required.', 
+                        sameBookingClass: 'Rebook original RBD class configuration if active.', 
+                        lowestAvailableClass: 'Original booking class preferred.', 
+                        oalAllowed: true, 
+                        ticketReissue: true, 
+                        endorsementCode: 'DUE SKCH', 
+                        geoAllowance: 'Bilateral alternate rerouting constraints apply.',
+                        rebookPriority: '1. LHG Operating Prime -> 2. LHG Marketing Codeshare -> 3. Star Alliance Partner Carriers.',
+                        allianceAllowance: 'Star Alliance operating flights available if closed in prime tiers.',
+                        codeshareRules: 'Codeshare re-mapping supported across coordinated cross-operating nodes.',
+                        contactEmail: 'agency.support@lufthansagroup.com',
+                        contactPhone: '+49 69 86 799 799'
+                    },
+                    refundPolicy: { refundAllowed: true, refundThreshold: 'Involuntary limits apply', cancellationRefund: true, majorScheduleChangeRefund: true, penalty: 'None', refundWaiverCode: 'System Verified', osiTourCode: 'OS LH INVOL SKCHG' },
+                    nameCorrection: { 
+                        typoAllowance: 'Up to two (2) letters in the first-, middle- or last name or title can be corrected directly by the travel agent in the reservation system (e.g., BRWON to BROWN, or title changes like MR to MRS/MX)[cite: 67]. Only one name correction per person is permitted[cite: 56].', 
+                        nicknameRule: 'Correction of common nicknames/variants (e.g., BILL to WILLIAM, USCHI to URSULA, PACO to FRANCISCO) must be routed to Lufthansa Group for processing[cite: 67].', 
+                        invertedRule: 'Correction of names in an inverted sequence (e.g., PETER/WILLIAM to WILLIAM/PETER) must be handled by Lufthansa Group Agency Support[cite: 67].', 
+                        additionalNameRule: 'Adding a first, middle, or last name as per travel document (proof required) is managed by Lufthansa Group Agency Support[cite: 65, 77, 79]. Deletion of second first name, middle name or second family name is not permitted[cite: 83].', 
+                        legalChange: 'The name of the passenger has changed due to marriage, divorce, gender reassignment, legal proceedings and/or a new passport/ID[cite: 58]. Proof is required (e.g., marriage certificate) and is verified by Lufthansa Group Agency Support[cite: 59, 60].', 
+                        passportMatch: true, 
+                        penaltyFee: 'As of 01 July 2024, the Name Correction Fee has been completely abolished, and name corrections under this policy are processed free of charge[cite: 17, 51].', 
+                        gdsCommand: 'Reissue required after correction[cite: 136]. No waiver from support is needed for these reissues[cite: 138].', 
+                        osiString: 'Endorsement Box text must be documented with: NAME CORRECTION[cite: 137].', 
+                        techRestrictions: 'To avoid automated cancellation (UC/HX) of other airlines (OAL) segments, a new PNR must be created if OAL flights exist[cite: 85]. Corrections on WK operated flights must use a new PNR[cite: 90]. If an FQTV element is included, delete it and re-enter after correction[cite: 93, 94].', 
+                        fallbackProcess: 'If correction in the ticket is not feasible, entering the correct name as an SSR DOCS element is permitted: SSR DOCS YY HK1 ////DDMMMYY/F//LAST NAME/FIRST NAME/MIDDLE NAME[cite: 108, 123, 124, 134]. USA flights require a 100% match[cite: 133].',
+                        contactEmail: 'lhg.fulfillment@lufthansagroup.com',
+                        contactPhone: '+49 69 86 799 800'
+                    }
+                },
+                {
                     airlineName: 'Air Canada', iata: 'AC', icao: 'ACA', logo: '✈️', lastUpdated: '2026-06-27',
                     scheduleChange: { 
                         minorChange: 'Less than 60 minutes time deviation.', 
@@ -116,8 +153,8 @@
                         rebookPriority: '1. Air Canada/Express -> 2. AC* marketed Codeshare via Star Alliance partner -> 3. AC* marketed on OAL -> 4. Pure Star Alliance Operating Carrier -> 5. Interline partner with e-ticket agreement.',
                         allianceAllowance: 'Star Alliance network carriers fully authorized for reprotection inside applicable cabins using original class mapping definitions.',
                         codeshareRules: 'Rebook on operating carrier prime flight if AC* codeshare equivalent is cancelled, maintaining equivalent cabin attribute mapping.',
-                        contactEmail: 'agency.support@lufthansagroup.com',
-                        contactPhone: '+49 69 86 799 799'
+                        contactEmail: 'agency.support@airacandada.ca',
+                        contactPhone: '+1 888 247 2262'
                     },
                     refundPolicy: { refundAllowed: true, refundThreshold: 'More than 3 hours deviation or cancel with no acceptable protection available.', cancellationRefund: true, majorScheduleChangeRefund: true, penalty: 'None', refundWaiverCode: 'ACUSKEDCHG + Flight Number', osiTourCode: 'OS AC INVOL SKCHG' },
                     nameCorrection: { typoAllowance: 'Up to 3 characters free', legalChange: 'Permitted with marriage certificate', passportMatch: true, penaltyFee: 'Free for typos, otherwise $50 CAD', gdsCommand: 'CHNH/LASTNAME/FIRSTNAME', osiString: 'OS AC CORR NAME', nicknameRule: 'Handled via core desk authorization parameters', invertedRule: 'Supported if traveler match identity mirrors completely', additionalNameRule: 'Appended upon matching complete passport manifest', techRestrictions: 'Splitting out OAL active PNR layouts might be required', fallbackProcess: 'GDS native validation entry strings', contactEmail: 'trade.ca@aircanada.ca', contactPhone: '+1 888 247 2262' }
@@ -160,7 +197,7 @@
                     nameCorrection: { typoAllowance: 'First or middle name up to 3 chars', legalChange: 'Marriage/Divorce certificates accepted', passportMatch: true, penaltyFee: 'UltraBasic excluded, others free for typos', gdsCommand: 'CHNE/GDS SWAP PERMITTED', osiString: 'OS WS TYPO CORR', nicknameRule: 'Bilateral processing constraints dictating swap metrics', invertedRule: 'Re-sync available if operating tags trace cleanly', additionalNameRule: 'Appended upon strict matching criteria evaluation', techRestrictions: 'Split functions must execute prior to modifying profile nodes', fallbackProcess: 'Direct connection support line intervention', contactEmail: 'trade.support@westjet.com', contactPhone: '+1 888 937 8538' }
                 }
             ];
-            this.selectedAirline = this.airlines[1]; 
+            this.selectedAirline = this.airlines[0]; 
         },
         get filteredAirlines() {
             if (!this.searchQuery) return this.airlines;
@@ -216,6 +253,10 @@
             </div>
             
             <div class="flex items-center space-x-4">
+                <div class="bg-slate-950 border border-slate-800 rounded-lg p-1 flex space-x-1">
+                    <button @click="currentLang = 'en'" :class="currentLang === 'en' ? 'bg-sky-600 font-bold text-white' : 'text-slate-400 hover:text-white'" class="px-2 py-1 rounded text-xs transition">EN</button>
+                </div>
+
                 <div class="flex items-center bg-slate-900 p-1 border border-slate-800 rounded-lg">
                     <input type="password" placeholder="Admin Key..." x-model="adminPasswordInput" @keyup.enter="verifyAdmin()" class="bg-slate-950 border-0 outline-none text-xs px-2 py-1 rounded text-white w-20 focus:ring-1 focus:ring-sky-500" />
                     <button @click="verifyAdmin()" class="bg-slate-800 hover:bg-sky-600 text-white font-bold text-[10px] px-2 py-1 rounded ml-1 transition">Auth</button>
@@ -269,8 +310,8 @@
                     
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-xs">
                         <div><label class="block font-semibold text-slate-400 mb-1">Airline Name</label><input type="text" x-model="formAirline.airlineName" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
-                        <div><label class="block font-semibold text-slate-400 mb-1">IATA Code</label><input type="text" x-model="formAirline.iata" :disabled="isEditing" placeholder="AI" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
-                        <div><label class="block font-semibold text-slate-400 mb-1">ICAO Code</label><input type="text" x-model="formAirline.icao" placeholder="AIC" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
+                        <div><label class="block font-semibold text-slate-400 mb-1">IATA Code</label><input type="text" x-model="formAirline.iata" :disabled="isEditing" placeholder="LH" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
+                        <div><label class="block font-semibold text-slate-400 mb-1">ICAO Code</label><input type="text" x-model="formAirline.icao" placeholder="DLH" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
                         <div><label class="block font-semibold text-slate-400 mb-1">Emoji Logo</label><input type="text" x-model="formAirline.logo" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white text-center" /></div>
                     </div>
                     
@@ -291,8 +332,8 @@
                             <div><label class="block font-semibold text-amber-400 mb-1">Alliance Rebooking Allowance</label><input type="text" x-model="formAirline.scheduleChange.allianceAllowance" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
                             <div><label class="block font-semibold text-amber-400 mb-1">Codeshare / Interline Mapping</label><input type="text" x-model="formAirline.scheduleChange.codeshareRules" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
                             
-                            <div><label class="block font-semibold text-rose-400 mb-1">SKCHG Contact Email</label><input type="text" x-model="formAirline.scheduleChange.contactEmail" placeholder="agency.support@airline.com" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white focus:ring-1 focus:ring-rose-500" /></div>
-                            <div class="md:col-span-2"><label class="block font-semibold text-rose-400 mb-1">SKCHG Contact Phone</label><input type="text" x-model="formAirline.scheduleChange.contactPhone" placeholder="+1 800 XXX XXXX" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white focus:ring-1 focus:ring-rose-500" /></div>
+                            <div><label class="block font-semibold text-rose-400 mb-1">SKCHG Contact Email</label><input type="text" x-model="formAirline.scheduleChange.contactEmail" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
+                            <div class="md:col-span-2"><label class="block font-semibold text-rose-400 mb-1">SKCHG Contact Phone</label><input type="text" x-model="formAirline.scheduleChange.contactPhone" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
                         </div>
                     </div>
 
@@ -309,19 +350,19 @@
                     <div class="border-t border-slate-800/80 pt-4 space-y-4">
                         <h4 class="text-xs font-bold text-purple-400 uppercase tracking-widest">3. Name Correction Parameters & Contact Channels</h4>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-                            <div><label class="block font-semibold text-slate-400 mb-1">Self-Service Typo Tolerance Threshold</label><input type="text" x-model="formAirline.nameCorrection.typoAllowance" placeholder="e.g. Up to 2 characters" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
-                            <div><label class="block font-semibold text-slate-400 mb-1">Nickname Variants Matching Rule</label><input type="text" x-model="formAirline.nameCorrection.nicknameRule" placeholder="e.g. Allowed via support desk swap checks" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
-                            <div><label class="block font-semibold text-slate-400 mb-1">Inverted Name Sequence Handling</label><input type="text" x-model="formAirline.nameCorrection.invertedRule" placeholder="e.g. Supported with documentation validation" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
-                            <div><label class="block font-semibold text-slate-400 mb-1">Adding Open Additional Names</label><input type="text" x-model="formAirline.nameCorrection.additionalNameRule" placeholder="e.g. Free to append missing given/middle tokens" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
-                            <div><label class="block font-semibold text-slate-400 mb-1">Legal Changes & Proof Matrix</label><input type="text" x-model="formAirline.nameCorrection.legalChange" placeholder="e.g. Marriage/Divorce decrees accepted" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
-                            <div><label class="block font-semibold text-slate-400 mb-1">Change Penalties / Fees</label><input type="text" x-model="formAirline.nameCorrection.penaltyFee" placeholder="e.g. Free of charge" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
-                            <div><label class="block font-semibold text-slate-400 mb-1">GDS Reissue / Swap Command</label><input type="text" x-model="formAirline.nameCorrection.gdsCommand" placeholder="e.g. GDS Native format entry string" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
-                            <div><label class="block font-semibold text-slate-400 mb-1">OSI / Endorsement Text String</label><input type="text" x-model="formAirline.nameCorrection.osiString" placeholder="e.g. NAME CORRECTION" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
-                            <div><label class="block font-semibold text-slate-400 mb-1">Technical Sync & PNR Restrictions</label><input type="text" x-model="formAirline.nameCorrection.techRestrictions" placeholder="e.g. OAL segments require generating fresh PNR splits" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
-                            <div class="md:col-span-3"><label class="block font-semibold text-slate-400 mb-1">Non-Feasible Secondary Workarounds (SSR DOCS mapping)</label><input type="text" x-model="formAirline.nameCorrection.fallbackProcess" placeholder="e.g. Inject SSR DOCS string elements to retain original coupon lines" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
+                            <div><label class="block font-semibold text-slate-400 mb-1">Self-Service Typo Tolerance Threshold</label><input type="text" x-model="formAirline.nameCorrection.typoAllowance" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
+                            <div><label class="block font-semibold text-slate-400 mb-1">Nickname Variants Matching Rule</label><input type="text" x-model="formAirline.nameCorrection.nicknameRule" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
+                            <div><label class="block font-semibold text-slate-400 mb-1">Inverted Name Sequence Handling</label><input type="text" x-model="formAirline.nameCorrection.invertedRule" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
+                            <div><label class="block font-semibold text-slate-400 mb-1">Adding Open Additional Names</label><input type="text" x-model="formAirline.nameCorrection.additionalNameRule" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
+                            <div><label class="block font-semibold text-slate-400 mb-1">Legal Changes & Proof Matrix</label><input type="text" x-model="formAirline.nameCorrection.legalChange" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
+                            <div><label class="block font-semibold text-slate-400 mb-1">Change Penalties / Fees</label><input type="text" x-model="formAirline.nameCorrection.penaltyFee" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
+                            <div><label class="block font-semibold text-slate-400 mb-1">GDS Reissue / Swap Command</label><input type="text" x-model="formAirline.nameCorrection.gdsCommand" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
+                            <div><label class="block font-semibold text-slate-400 mb-1">OSI / Endorsement Text String</label><input type="text" x-model="formAirline.nameCorrection.osiString" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
+                            <div><label class="block font-semibold text-slate-400 mb-1">Technical Sync & PNR Restrictions</label><input type="text" x-model="formAirline.nameCorrection.techRestrictions" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
+                            <div class="md:col-span-3"><label class="block font-semibold text-slate-400 mb-1">Non-Feasible Secondary Workarounds (SSR DOCS mapping)</label><input type="text" x-model="formAirline.nameCorrection.fallbackProcess" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
                             
-                            <div><label class="block font-semibold text-rose-400 mb-1">Name Correction Contact Email</label><input type="text" x-model="formAirline.nameCorrection.contactEmail" placeholder="namecorr.support@airline.com" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
-                            <div class="md:col-span-2"><label class="block font-semibold text-rose-400 mb-1">Name Correction Contact Phone</label><input type="text" x-model="formAirline.nameCorrection.contactPhone" placeholder="+1 800 XXX XXXX" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
+                            <div><label class="block font-semibold text-rose-400 mb-1">Name Correction Contact Email</label><input type="text" x-model="formAirline.nameCorrection.contactEmail" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
+                            <div class="md:col-span-2"><label class="block font-semibold text-rose-400 mb-1">Name Correction Contact Phone</label><input type="text" x-model="formAirline.nameCorrection.contactPhone" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
                         </div>
                     </div>
                     
