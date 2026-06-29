@@ -76,13 +76,10 @@
                 osiNameLabel: 'OSI Formatting String',
                 techRestrictLabel: 'Technical Infrastructure Restrictions',
                 fallbackProcessLabel: 'Non-Feasible Secondary Workarounds',
-                
-                // New Document Vault Translations
                 docSectionHeader: '📚 Official Carrier Document Vault',
                 webLinkLabel: 'Official Web Policy Portal',
                 pdfLinkLabel: 'Download Reference Guidelines (PDF)',
                 noLinksText: 'No verified external attachments uploaded for this carrier.',
-                
                 noneDefined: 'None Defined',
                 allowed: 'ALLOWED',
                 prohibited: 'PROHIBITED',
@@ -105,7 +102,7 @@
                 subtitle: 'مركز مرجع السياسات لشركات الطيران',
                 searchLabel: 'البحث في مؤشر الأسطول',
                 searchPlaceholder: 'الناقل، إياتا، إيكاو...',
-                indexLabel: 'مؤشر شركات الطيران',
+                indexLabel: 'مؤشر تقسيم الشركات',
                 paxView: 'عرض المسافر',
                 agentView: 'عرض الوكيل',
                 tabSkchg: '🔄 تغيير الجدول',
@@ -296,24 +293,24 @@
                         penalty: 'None', 
                         refundWaiverCode: 'System Verified', 
                         osiTourCode: 'OS LH INVOL SKCHG',
-                        mainAirlineRefundPolicy: 'Full refund authorized for delays exceeding 3 hours or outright structural cancellations[cite: 51, 107]. processed directly through normal ARC/BSP channels.',
-                        oalAirlineRefundPolicy: 'Authorized if the partner airline changes cause a structural misconnect or delay over 3 hours. Ticket stock 257/082/220/724 must be verified[cite: 44].'
+                        mainAirlineRefundPolicy: 'Full refund authorized for delays exceeding 3 hours or outright structural cancellations. processed directly through normal ARC/BSP channels.',
+                        oalAirlineRefundPolicy: 'Authorized if the partner airline changes cause a structural misconnect or delay over 3 hours. Ticket stock 257/082/220/724 must be verified.'
                     },
                     nameCorrection: { 
-                        typoAllowance: 'Up to two (2) letters in the first-, middle- or last name or title can be corrected directly by the travel agent in the GDS system (e.g., BRWON to BROWN)[cite: 67]. Only one name correction per person is permitted[cite: 56].', 
-                        nicknameRule: 'Correction of common nicknames/variants (e.g., BILL to WILLIAM, USCHI to URSULA, PACO to FRANCISCO) must be routed to Lufthansa Group[cite: 67].', 
-                        invertedRule: 'Correction of names in an inverted sequence (e.g., PETER/WILLIAM to WILLIAM/PETER) must be handled by Lufthansa Group Agency Support[cite: 67].', 
-                        additionalNameRule: 'Adding a first, middle, or last name as per travel document (proof required) is managed by Lufthansa Group Agency Support[cite: 67, 79]. Deletion of second first name, middle name or second family name is not permitted[cite: 83].', 
-                        legalChange: 'Passenger name changes due to marriage, divorce, gender reassignment, legal proceedings and/or a new passport/ID are allowed[cite: 58]. Proof is required and verified by Lufthansa Group Agency Support[cite: 59, 60].', 
+                        typoAllowance: 'Up to two (2) letters in the first-, middle- or last name or title can be corrected directly by the travel agent in the GDS system (e.g., BRWON to BROWN). Only one name correction per person is permitted.', 
+                        nicknameRule: 'Correction of common nicknames/variants (e.g., BILL to WILLIAM, USCHI to URSULA, PACO to FRANCISCO) must be routed to Lufthansa Group.', 
+                        invertedRule: 'Correction of names in an inverted sequence (e.g., PETER/WILLIAM to WILLIAM/PETER) must be handled by Lufthansa Group Agency Support.', 
+                        additionalNameRule: 'Adding a first, middle, or last name as per travel document (proof required) is managed by Lufthansa Group Agency Support. Deletion of second first name, middle name or second family name is not permitted.', 
+                        legalChange: 'Passenger name changes due to marriage, divorce, gender reassignment, legal proceedings and/or a new passport/ID are allowed. Proof is required and verified by Lufthansa Group Agency Support.', 
                         passportMatch: true, 
-                        penaltyFee: 'As of 01 July 2024, the Name Correction Fee has been completely abolished, and name corrections under this policy are processed free of charge[cite: 34, 51].', 
-                        gdsCommand: 'Native ticket reissue as even exchange[cite: 120]. No waiver from support is needed for these reissues[cite: 138].', 
-                        osiString: 'Endorsement Box text must be documented with: NAME CORRECTION[cite: 137].', 
-                        techRestrictions: 'To avoid automated cancellation (UC/HX status codes) of other airlines (OAL) segments, a new PNR must be created if OAL flights exist[cite: 85]. Corrections on WK operated flights must use a new PNR[cite: 90]. If an FQTV element is included, delete it and re-enter after correction[cite: 93, 94].', 
-                        fallbackProcess: 'If name correction in the ticket is not feasible, enter correct name as SSR DOCS: SSR DOCS YY HK1 ////DDMMMYY/F//LAST NAME/FIRST NAME/MIDDLE NAME[cite: 123, 124]. USA flights require 100% match[cite: 133].',
+                        penaltyFee: 'As of 01 July 2024, the Name Correction Fee has been completely abolished, and name corrections under this policy are processed free of charge.', 
+                        gdsCommand: 'Native ticket reissue as even exchange. No waiver from support is needed for these reissues.', 
+                        osiString: 'Endorsement Box text must be documented with: NAME CORRECTION.', 
+                        techRestrictions: 'To avoid automated cancellation (UC/HX status codes) of other airlines (OAL) segments, a new PNR must be created if OAL flights exist. Corrections on WK operated flights must use a new PNR. If an FQTV element is included, delete it and re-enter after correction.', 
+                        fallbackProcess: 'If name correction in the ticket is not feasible, enter correct name as SSR DOCS: SSR DOCS YY HK1 ////DDMMMYY/F//LAST NAME/FIRST NAME/MIDDLE NAME. USA flights require 100% match.',
                         contactEmail: 'lhg.fulfillment@lufthansagroup.com',
                         contactPhone: '+49 69 86 799 800',
-                        nameOalRule: 'To prevent automated cancellation (UC/HX status codes) by other airlines (OAL), a fresh PNR must be created whenever a name correction is processed in a PNR containing external codeshare or interline segments[cite: 85].'
+                        nameOalRule: 'To prevent automated cancellation (UC/HX status codes) by other airlines (OAL), a fresh PNR must be created whenever a name correction is processed in a PNR containing external codeshare or interline segments.'
                     }
                 },
                 {
@@ -389,6 +386,43 @@
                         oalAirlineRefundPolicy: 'Applies to DL codeshare or interline segments when partner delays create misconnections exceeding 120 minutes.'
                     },
                     nameCorrection: { typoAllowance: 'Up to 3 characters free in first or middle names.', nicknameRule: 'Bilateral match processing rules dictate swap allowances.', invertedRule: 'Supported via explicit back-office manual intervention entries.', additionalNameRule: 'Allowed with complete travel document verification.', legalChange: 'Allowed with official decree documents', passportMatch: true, penaltyFee: '$150 USD Admin Fee for major swaps', gdsCommand: 'OSI DL NAME CORRECTION SEC', osiString: 'OS DL REISSUE TYPO CORR', techRestrictions: 'GDS operational limitations require active ticket segment validation syncing.', fallbackProcess: 'Manual re-routing or waiver token authorization via support line assistance.', contactEmail: 'trade.support@delta.com', contactPhone: '+1 800 325 1551', nameOalRule: 'Name corrections are strictly prohibited on external interline ticket rows. You must drop the segments, update the name profile, and request seat re-allocations.' }
+                },
+                {
+                    airlineName: 'WestJet Airlines', iata: 'WS', icao: 'WJA', logo: '🍁', lastUpdated: '2026-06-26',
+                    policyWebLink: 'https://www.westjet.com/en-ca/travel-agents',
+                    policyPdfLink: '',
+                    scheduleChange: { 
+                        minorChange: 'Less than 181 minutes', 
+                        majorChange: '181 minutes or more (3+ Hours)', 
+                        threshold: '181 minutes', 
+                        travelWindow: '+/-2 days', 
+                        sameCabin: 'Same Cabin Balance Required', 
+                        sameBookingClass: 'Lowest Class Allowed Fallback', 
+                        lowestAvailableClass: 'Next highest up to Y (Eco) / W (Prem) / J (Biz)', 
+                        oalAllowed: true, 
+                        ticketReissue: true, 
+                        endorsementCode: 'SKCHG', 
+                        geoAllowance: 'Within 320 km / 200 miles (e.g. YVR/YXX)', 
+                        rebookPriority: '1. WestJet Prime -> 2. Commercial partner network agreements.', 
+                        allianceAllowance: 'Non-alliance point-to-point interline rules apply as designated by commercial bilateral code books.', 
+                        codeshareRules: 'Pure operating code lines prioritized over complex multi-segment codeshare sectors.', 
+                        contactEmail: 'agencysalessupport@westjet.com', 
+                        contactPhone: '+1 877 664 3205', 
+                        mainAirlineChangePolicy: 'Full automated reissue allowed on WestJet flights into identical cabins matching original routing loops.', 
+                        oalAirlineChangePolicy: 'Rebooking on non-alliance commercial partner flights applies only if prime options are dropped entirely.' 
+                    },
+                    refundPolicy: { 
+                        refundAllowed: true, 
+                        refundThreshold: '181 minutes', 
+                        cancellationRefund: true, 
+                        majorScheduleChangeRefund: true, 
+                        penalty: 'Taxes L8/DO non-refundable for PUJ/POP/AZS/LRM', 
+                        refundWaiverCode: 'Q21SKDRF22', 
+                        osiTourCode: 'None Specified',
+                        mainAirlineRefundPolicy: 'Full refund authorized if delay is 181+ minutes.',
+                        oalAirlineRefundPolicy: 'Permitted if partner flight drops affect connecting flights and exceed 181+ minutes.'
+                    },
+                    nameCorrection: { typoAllowance: 'First or middle name up to 3 chars', legalChange: 'Marriage/Divorce certificates accepted', passportMatch: true, penaltyFee: 'UltraBasic excluded, others free for typos', gdsCommand: 'CHNE/GDS SWAP PERMITTED', osiString: 'OS WS TYPO CORR', nicknameRule: 'Bilateral processing constraints dictating swap metrics', invertedRule: 'Re-sync available if operating tags trace cleanly', additionalNameRule: 'Appended upon strict matching criteria evaluation', techRestrictions: 'Split functions must execute prior to modifying profile nodes', fallbackProcess: 'Direct connection support line intervention', contactEmail: 'trade.support@westjet.com', contactPhone: '+1 888 937 8538', nameOalRule: 'Bilateral commercial rules state that OAL partner segments must be cleared before agents manually force name updates over GDS PNR fields.' }
                 }
             ];
             this.selectedAirline = this.airlines[0]; 
@@ -530,7 +564,7 @@
                             <div><label class="block font-semibold text-slate-400 mb-1">Cabin Matching Rules</label><input type="text" x-model="formAirline.scheduleChange.sameCabin" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
                             <div><label class="block font-semibold text-slate-400 mb-1">Booking Class (RBD) Rules</label><input type="text" x-model="formAirline.scheduleChange.sameBookingClass" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
                             <div><label class="block font-semibold text-slate-400 mb-1">Fallback Class Target</label><input type="text" x-model="formAirline.scheduleChange.lowestAvailableClass" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
-                            <div><label class="block font-semibold text-slate-400 mb-1">Endorsement Box Waiver Text</label><input type="text" x-model="formAirline.scheduleChange.endorsementCode" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
+                            <div><label class="block font-semibold text-sky-400 mb-1">Endorsement Box Waiver Text</label><input type="text" x-model="formAirline.scheduleChange.endorsementCode" placeholder="e.g. DUE SKCH" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white focus:ring-1 focus:ring-sky-400" /></div>
                             <div><label class="block font-semibold text-slate-400 mb-1">Geo Allowance Map</label><input type="text" x-model="formAirline.scheduleChange.geoAllowance" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
                             
                             <div><label class="block font-semibold text-amber-400 mb-1">Rebooking Order Priority</label><input type="text" x-model="formAirline.scheduleChange.rebookPriority" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
@@ -775,7 +809,7 @@
 
                                     </div>
                                 </div>
-</template>
+                            </template>
                             
                         </div>
                     </template>
