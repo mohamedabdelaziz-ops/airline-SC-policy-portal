@@ -20,7 +20,28 @@
         activePolicy: 'pure_skchg', 
         airlines: [],
 
-        // Dynamic additions state manager
+        // Time Converter State
+        zuluInput: '12:00',
+        get estOutput() {
+            if(!this.zuluInput) return '--:--';
+            try {
+                const parts = this.zuluInput.split(':');
+                if(parts.length !== 2) return '--:--';
+                let hours = parseInt(parts[0], 10);
+                const minutes = parts[1];
+                if(isNaN(hours) || hours < 0 || hours > 23) return '--:--';
+                
+                // UTC to EST is UTC - 5 hours
+                let estHours = hours - 5;
+                if (estHours < 0) estHours += 24;
+                
+                return String(estHours).padStart(2, '0') + ':' + minutes;
+            } catch(e) {
+                return '--:--';
+            }
+        },
+
+        // Dynamic additions manager
         newCustomLabel: '',
         newCustomValue: '',
         newCustomStatus: true,
@@ -92,7 +113,6 @@
             oalName: { fields: [] }
         },
 
-        // Helper to check if a specific field label contains internal technical words
         isInternalField(label) {
             const lowerLabel = label.toLowerCase();
             return lowerLabel.includes('gds') || 
@@ -324,12 +344,6 @@
                        airline.icao.toLowerCase().includes(this.searchQuery.toLowerCase());
             });
         },
-        verifyAdmin() {
-            if(this.adminPasswordInput === 'admin123') {
-                this.isAdminMode = true;
-                this.adminPasswordInput = '';
-            } else { alert('Access Denied'); }
-        },
         addCustomField(pillar) {
             if(!this.newCustomLabel) return alert('Please enter a Field Title Name');
             const targetPillarKey = pillar === 'pure_skchg' ? 'pureSkchg' : pillar === 'pure_name' ? 'pureName' : pillar === 'oal_skchg' ? 'oalSkchg' : 'oalName';
@@ -405,6 +419,24 @@
         <main class="max-w-7xl mx-auto p-6 lg:p-8 grid grid-cols-1 lg:grid-cols-4 gap-8 flex-1 w-full">
             
             <div class="lg:col-span-1 space-y-6">
+                
+                <div class="bg-gradient-to-br from-slate-900 to-indigo-950/40 border border-slate-800 p-5 rounded-xl shadow-xl space-y-3">
+                    <div class="flex items-center space-x-2 border-b border-slate-800 pb-2">
+                        <span class="text-base">🕰️</span>
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-300">Zulu Time Converter</h4>
+                    </div>
+                    <div class="space-y-2">
+                        <div>
+                            <label class="block text-[10px] uppercase text-slate-400 mb-1">Input Zulu Time (24h)</label>
+                            <input type="time" x-model="zuluInput" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white font-mono text-sm focus:outline-none focus:ring-1 focus:ring-sky-500" />
+                        </div>
+                        <div class="bg-slate-950/80 border border-slate-800 p-2.5 rounded-lg flex justify-between items-center">
+                            <span class="text-[10px] uppercase text-slate-400 font-semibold">EST Equivalent:</span>
+                            <span class="text-sm font-bold font-mono text-sky-400" x-text="estOutput"></span>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl shadow-xl space-y-4">
                     <div>
                         <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2" x-text="i18n[currentLang].searchLabel"></label>
@@ -417,7 +449,7 @@
                     <div class="space-y-1.5 max-h-[300px] overflow-y-auto pr-1">
                         <template x-for="airline in filteredAirlines" :key="airline.iata">
                             <div class="flex items-center space-x-1">
-                                <button @click="selectedAirline = airline" :class="selectedAirline && selectedAirline.iata === airline.iata ? 'bg-gradient-to-r from-sky-600 to-indigo-600 text-white shadow-lg' : 'bg-slate-950 hover:bg-slate-800 text-slate-300 border border-slate-800/60'" class="w-full text-left p-3 rounded-lg flex justify-between items-center transition">
+                                <button @click="selectedAirline = airline" :class="selectedAirline && selectedAirline.iata === airline.iata ? 'bg-gradient-to-r from-sky-600 to-indigo-600 text-white shadow-lg' : 'bg-slate-950 hover:bg-slate-800 text-slate-300 border border-slate-800/60'" class="flex-1 text-left p-3 rounded-lg flex justify-between items-center transition">
                                     <div class="flex items-center space-x-3"><span class="text-lg" x-text="airline.logo"></span><span class="font-semibold text-sm" x-text="airline.airlineName"></span></div>
                                     <span class="font-mono text-xs opacity-70" x-text="'[' + airline.iata + ']'"></span>
                                 </button>
@@ -444,12 +476,12 @@
                         <h3 class="text-sm font-bold text-amber-400 tracking-wider uppercase">INJECT NEW FLEET POLICY RULESET</h3>
                         <button @click="resetForm()" class="bg-slate-800 text-xs px-2.5 py-1 rounded text-slate-300">Clear Form</button>
                     </div>
-
+                    
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-xs">
-                        <div><label class="block text-slate-400 mb-1">Airline Name</label><input type="text" x-model="formAirline.airlineName" class="w-full bg-[#070b19] border border-slate-800 p-2 rounded text-white" /></div>
-                        <div><label class="block text-slate-400 mb-1">IATA Code</label><input type="text" x-model="formAirline.iata" :disabled="isEditing" class="w-full bg-[#070b19] border border-slate-800 p-2 rounded text-white" /></div>
-                        <div><label class="block text-amber-400 mb-1">SKD CHG Trigger Metric</label><input type="text" x-model="formAirline.threshold" class="w-full bg-[#070b19] border border-slate-800 p-2 rounded" /></div>
-                        <div><label class="block text-sky-400 mb-1">Travel Window Metric</label><input type="text" x-model="formAirline.travelWindow" class="w-full bg-[#070b19] border border-slate-800 p-2 rounded" /></div>
+                        <div><label class="block font-semibold text-slate-400 mb-1">Airline Name</label><input type="text" x-model="formAirline.airlineName" class="w-full bg-[#070b19] border border-slate-800 p-2 rounded text-white" /></div>
+                        <div><label class="block font-semibold text-slate-400 mb-1">IATA Code</label><input type="text" x-model="formAirline.iata" :disabled="isEditing" class="w-full bg-[#070b19] border border-slate-800 p-2 rounded text-white" /></div>
+                        <div><label class="block font-semibold text-amber-400 mb-1">SKD CHG Trigger Metric</label><input type="text" x-model="formAirline.threshold" class="w-full bg-[#070b19] border border-slate-800 p-2 rounded" /></div>
+                        <div><label class="block font-semibold text-sky-400 mb-1">Travel Window Metric</label><input type="text" x-model="formAirline.travelWindow" class="w-full bg-[#070b19] border border-slate-800 p-2 rounded" /></div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-xs pt-2">
