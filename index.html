@@ -58,6 +58,9 @@
                 codeshareLabel: 'Codeshare / Interline Mapping',
                 contactEmailLabel: 'Support Desks Contact Email',
                 contactPhoneLabel: 'Support Desks Contact Phone',
+                mainAirlineChangeLabel: 'Policy if Main/Validating Airline Causes Change',
+                oalAirlineChangeLabel: 'Policy if Codeshare/OAL Partner Causes Change',
+                nameCorrOalLabel: 'Name Correction Rules with Codeshare/OAL Flights',
                 nameHeader: 'NAME CORRECTION RULES',
                 gdsCmdHeader: 'GDS COMMANDS & REISSUE',
                 typoLabel: 'Self-Service Typo Tolerance Threshold',
@@ -125,19 +128,22 @@
                 codeshareLabel: 'خرائط الرمز المشترك / الإنترلاين',
                 contactEmailLabel: 'البريد الإلكتروني لدعم الوكلاء',
                 contactPhoneLabel: 'رقم هاتف دعم الوكلاء',
+                mainAirlineChangeLabel: 'السياسة إذا تسببت شركة الطيران الأساسية بالتغيير',
+                oalAirlineChangeLabel: 'السياسة إذا تسببت الشركة الشريكة/الأخرى بالتغيير',
+                nameCorrOalLabel: 'قواعد تصحيح الأسماء مع رحلات الرمز المشترك/الأخرى',
                 nameHeader: 'قواعد تصحيح الأسماء',
                 gdsCmdHeader: 'أوامر GDS وإعادة الإصدار',
-                typoLabel: 'حدود التسامح مع الأخطاء المطبعية',
-                nicknameLabel: 'مطابقة الأسماء المستعارة والمتغيرات',
+                typoLabel: 'حدود التسامح مع الأخطاء المطبعية للوكيل',
+                nicknameLabel: 'مطابقة الأسماء المستعارة والمتغيرات الشائعة',
                 invertedLabel: 'قواعد الأسماء المعكوسة (الاسم الأول/العائلة)',
-                additionalNameLabel: 'إضافة أسماء أولى/وسطى/أخيرة إضافية',
-                legalLabel: 'التغييرات القانونية / الزواج',
+                additionalNameLabel: 'إضافة أسماء أولى/وسطى/أخيرة إضافية للمطابقة',
+                legalLabel: 'التغييرات القانونية / الزواج والطلاق',
                 passportLabel: 'مطلوب مطابقة جواز السفر',
-                nameFeeLabel: 'غرامات / رسوم التغيير',
+                nameFeeLabel: 'غرامات / رسوم التغيير والملفات الإدارية',
                 gdsReissueLabel: 'أمر إعادة الإصدار / التبديل',
                 osiNameLabel: 'سلسلة تنسيق OSI',
-                techRestrictLabel: 'القيود التقنية للبنية التحتية',
-                fallbackProcessLabel: 'الحلول البديلة الثانوية غير الجدوى',
+                techRestrictLabel: 'القيود التقنية للبنية التحتية والأنظمة',
+                fallbackProcessLabel: 'الحلول البديلة الثانوية في حال تعذر التصحيح',
                 noneDefined: 'غير محدد',
                 allowed: 'مسموح به',
                 prohibited: 'محظور',
@@ -192,19 +198,22 @@
                 codeshareLabel: 'Mappage Partage de Code / Interligne',
                 contactEmailLabel: 'E-mail Support d\'Agence',
                 contactPhoneLabel: 'Téléphone Support d\'Agence',
+                mainAirlineChangeLabel: 'Politique si la Compagnie Principale cause le changement',
+                oalAirlineChangeLabel: 'Politique si le Partenaire/OAL cause le changement',
+                nameCorrOalLabel: 'Règles de Correction avec Vols Codeshare/OAL',
                 nameHeader: 'RÈGLES DE CORRECTION DE NOM',
                 gdsCmdHeader: 'COMMANDES GDS & RÉÉMISSION',
-                typoLabel: 'Tolérance Coquille Mineure',
-                nicknameLabel: 'Mappage des Pseudonymes / Variantes',
-                invertedLabel: 'Règles Séquence Noms Inversés',
-                additionalNameLabel: 'Ajout de Noms Secondaires/Milieu',
-                legalLabel: 'Changements Légaux / Mariage',
+                typoLabel: 'Tolérance Coquille Mineure en Self-Service',
+                nicknameLabel: 'Mappage des Pseudonymes / Variantes Communes',
+                invertedLabel: 'Règles Séquence Noms Inversés (Prénom/Nom)',
+                additionalNameLabel: 'Ajout de Noms Secondaires / Prénoms Composés',
+                legalLabel: 'Changements Légaux / Mariage et Divorce',
                 passportLabel: 'Correspondance Passeport Requise',
-                nameFeeLabel: 'Frais / Pénalités de Modification',
+                nameFeeLabel: 'Frais / Pénalités de Modification Administratives',
                 gdsReissueLabel: 'Commande de Réémission GDS',
                 osiNameLabel: 'Formatage Chaîne OSI',
-                techRestrictLabel: 'Restrictions Techniques GDS',
-                fallbackProcessLabel: 'Solutions Alternatives Secondaires',
+                techRestrictLabel: 'Restrictions Techniques des Systèmes GDS',
+                fallbackProcessLabel: 'Solutions Alternatives si la Correction est Impossible',
                 noneDefined: 'Aucun Défini',
                 allowed: 'AUTORISÉ',
                 prohibited: 'INTERDIT',
@@ -220,12 +229,12 @@
                 autoWaiver: 'Code de Vérification Automatisé',
                 fullRefAuth: 'Remboursement Complet Autorisé',
                 creditShell: 'Bon de Crédit Voyage',
-                noSelection: 'Aucune Compagnie Sélectionnée Detéctée'
+                noSelection: 'Aucune Compagnie Sélectionnée Détectée'
             }
         },
 
         formAirline: {
-            airlineName: '', iata: '', icao: '', logo: '✈️', lastUpdated: '2026-06-27',
+            airlineName: '', iata: '', icao: '', logo: '✈️', lastUpdated: '2026-06-29',
             scheduleChange: { minorChange: '', majorChange: '', threshold: '', travelWindow: '', sameCabin: '', sameBookingClass: '', lowestAvailableClass: '', oalAllowed: false, ticketReissue: true, endorsementCode: '', geoAllowance: '', rebookPriority: '', allianceAllowance: '', codeshareRules: '', contactEmail: '', contactPhone: '' },
             refundPolicy: { refundAllowed: false, refundThreshold: '', cancellationRefund: false, majorScheduleChangeRefund: false, penalty: 'None', refundWaiverCode: '', osiTourCode: '' },
             nameCorrection: { typoAllowance: '', nicknameRule: '', invertedRule: '', additionalNameRule: '', legalChange: '', passportMatch: true, penaltyFee: 'Free of Charge', gdsCommand: '', osiString: '', techRestrictions: '', fallbackProcess: '', contactEmail: '', contactPhone: '' }
@@ -234,7 +243,7 @@
         init() {
             this.airlines = [
                 {
-                    airlineName: 'Lufthansa Group', iata: 'LH', icao: 'DLH', logo: '🇩🇪', lastUpdated: '2026-06-27',
+                    airlineName: 'Lufthansa Group', iata: 'LH', icao: 'DLH', logo: '🇩🇪', lastUpdated: '2026-06-29',
                     scheduleChange: { 
                         minorChange: 'Time deviations below airline-defined threshold limits.', 
                         majorChange: 'Significant operation adjustments or scheduling cancellations.', 
@@ -251,23 +260,26 @@
                         allianceAllowance: 'Star Alliance operating flights available if closed in prime tiers.',
                         codeshareRules: 'Codeshare re-mapping supported across coordinated cross-operating nodes.',
                         contactEmail: 'agency.support@lufthansagroup.com',
-                        contactPhone: '+49 69 86 799 799'
+                        contactPhone: '+49 69 86 799 799',
+                        mainAirlineChangePolicy: 'Full complimentary reinstatement into original RBD on new PNR. If closed, rebook next open class inside the original cabin attributes.',
+                        oalAirlineChangePolicy: 'If an OAL carrier causes a schedule change, agents must rebook into the original RBD. If closed, rebook next open RBD. Note: The LHG helpdesk cannot push force-confirmations on OAL flights; fare differences apply if original inventory is closed.'
                     },
-                    refundPolicy: { refundAllowed: true, refundThreshold: 'Involuntary limits apply', cancellationRefund: true, majorScheduleChangeRefund: true, penalty: 'None', refundWaiverCode: 'System Verified', osiTourCode: 'OS LH INVOL SKCHG' },
+                    refundPolicy: { refundAllowed: true, refundThreshold: 'More than 3 hours deviation or cancel with no acceptable protection available.', cancellationRefund: true, majorScheduleChangeRefund: true, penalty: 'None', refundWaiverCode: 'ACUSKEDCHG + Flight Number', osiTourCode: 'OS LH INVOL SKCHG' },
                     nameCorrection: { 
-                        typoAllowance: 'Up to two (2) letters in the first-, middle- or last name or title can be corrected directly by the travel agent in the GDS system (e.g., BRWON to BROWN). [cite: 34, 67]', 
-                        nicknameRule: 'Correction of nicknames (e.g., BILL to WILLIAM, USCHI to URSULA, PACO to FRANCISCO) must be routed to Lufthansa Group. [cite: 67]', 
-                        invertedRule: 'Correction of names in inverted sequence (e.g., PETER/WILLIAM to WILLIAM/PETER) must be modified via back-office backends by Agency Support. [cite: 34, 67]', 
-                        additionalNameRule: 'Adding first, middle, or last name as per travel document is allowed via Agency Support. Deletion of second first name, middle name or second family name is prohibited. [cite: 34, 81, 83]', 
-                        legalChange: 'Passenger name changes due to marriage, divorce, gender reassignment, legal proceedings and/or a new passport/ID are allowed. Proof is required. [cite: 58, 59]', 
+                        typoAllowance: 'Up to two (2) letters in the first-, middle- or last name or title can be corrected directly by the travel agent in the GDS system (e.g., BRWON to BROWN). Only one name correction per person is permitted.', 
+                        nicknameRule: 'Correction of common nicknames/variants (e.g., BILL to WILLIAM, USCHI to URSULA, PACO to FRANCISCO) must be routed to Lufthansa Group for processing.', 
+                        invertedRule: 'Correction of names in an inverted sequence (e.g., PETER/WILLIAM to WILLIAM/PETER) must be handled by Lufthansa Group Agency Support.', 
+                        additionalNameRule: 'Adding a first, middle, or last name as per travel document (proof required) is managed by Lufthansa Group Agency Support. Deletion of second first name, middle name or second family name is not permitted.', 
+                        legalChange: 'Passenger name changes due to marriage, divorce, gender reassignment, legal proceedings and/or a new passport/ID are allowed. Proof is required.', 
                         passportMatch: true, 
-                        penaltyFee: 'As of 01 July 2024, the Name Correction Fee has been completely abolished. Processed free of charge. [cite: 34, 51]', 
-                        gdsCommand: 'Native ticket reissue as even exchange. No waiver from Agency Support is required. [cite: 136, 138]', 
-                        osiString: 'Endorsement Box text must be documented with: NAME CORRECTION. [cite: 137]', 
-                        techRestrictions: 'To avoid automated cancellation (UC/HX) of OAL segments, a new PNR must be created if OAL flights exist. Corrections on WK operated flights must use a new PNR. If an FQTV element is included, delete it and re-enter after correction. [cite: 47, 85, 93, 94]', 
-                        fallbackProcess: 'If name correction in the ticket is not feasible, enter correct name as SSR DOCS: SSR DOCS YY HK1 ////DDMMMYY/F//LAST NAME/FIRST NAME/MIDDLE NAME. USA flights require 100% match. [cite: 108, 123, 124, 133]',
+                        penaltyFee: 'As of 01 July 2024, the Name Correction Fee has been completely abolished, and name corrections under this policy are processed free of charge.', 
+                        gdsCommand: 'Native ticket reissue as even exchange. No waiver from support is needed for these reissues.', 
+                        osiString: 'Endorsement Box text must be documented with: NAME CORRECTION.', 
+                        techRestrictions: 'To avoid automated cancellation (UC/HX) of OAL segments, a new PNR must be created if OAL flights exist. Corrections on WK operated flights must use a new PNR. If an FQTV element is included, delete it and re-enter after correction.', 
+                        fallbackProcess: 'If name correction in the ticket is not feasible, enter correct name as SSR DOCS: SSR DOCS YY HK1 ////DDMMMYY/F//LAST NAME/FIRST NAME/MIDDLE NAME. USA flights require 100% match.',
                         contactEmail: 'lhg.fulfillment@lufthansagroup.com',
-                        contactPhone: '+49 69 86 799 800'
+                        contactPhone: '+49 69 86 799 800',
+                        nameOalRule: 'To prevent automated cancellation (UC/HX status codes) by other airlines (OAL), a fresh PNR must be created whenever a name correction is processed in a PNR containing external codeshare or interline segments.'
                     }
                 },
                 {
@@ -288,10 +300,12 @@
                         allianceAllowance: 'Star Alliance network carriers fully authorized for reprotection inside applicable cabins using original class mapping definitions.',
                         codeshareRules: 'Rebook on operating carrier prime flight if AC* codeshare equivalent is cancelled, maintaining equivalent cabin attribute mapping.',
                         contactEmail: 'agency.support@airacandada.ca',
-                        contactPhone: '+1 888 247 2262'
+                        contactPhone: '+1 888 247 2262',
+                        mainAirlineChangePolicy: 'Full rebooking on Air Canada mainline flights inside the same cabin and class. Automated revalidation or ticket exchange.',
+                        oalAirlineChangePolicy: 'Star Alliance partners follow standard rebooking priority matrix maps. Fare difference waived only if original RBD codes can be mapped correctly.'
                     },
                     refundPolicy: { refundAllowed: true, refundThreshold: 'More than 3 hours deviation or cancel with no acceptable protection available.', cancellationRefund: true, majorScheduleChangeRefund: true, penalty: 'None', refundWaiverCode: 'ACUSKEDCHG + Flight Number', osiTourCode: 'OS AC INVOL SKCHG' },
-                    nameCorrection: { typoAllowance: 'Up to 3 characters free', legalChange: 'Permitted with marriage certificate', passportMatch: true, penaltyFee: 'Free for typos, otherwise $50 CAD', gdsCommand: 'CHNH/LASTNAME/FIRSTNAME', osiString: 'OS AC CORR NAME', nicknameRule: 'Handled via core desk parameters', invertedRule: 'Supported if traveler match identity mirrors completely', additionalNameRule: 'Appended upon matching complete passport manifest', techRestrictions: 'Splitting out OAL active PNR layouts might be required', fallbackProcess: 'GDS native validation entry strings', contactEmail: 'trade.ca@aircanada.ca', contactPhone: '+1 888 247 2262' }
+                    nameCorrection: { typoAllowance: 'Up to 3 characters free', legalChange: 'Permitted with marriage certificate', passportMatch: true, penaltyFee: 'Free for typos, otherwise $50 CAD', gdsCommand: 'CHNH/LASTNAME/FIRSTNAME', osiString: 'OS AC CORR NAME', nicknameRule: 'Handled via core desk parameters', invertedRule: 'Supported if traveler match identity mirrors completely', additionalNameRule: 'Appended upon matching complete passport manifest', techRestrictions: 'Splitting out OAL active PNR layouts might be required', fallbackProcess: 'GDS native validation entry strings', contactEmail: 'trade.ca@aircanada.ca', contactPhone: '+1 888 247 2262', nameOalRule: 'Name modifications containing active other airline (OAL) links require dropping those rows first to avoid sync cancellation glitches.' }
                 },
                 {
                     airlineName: 'Delta Air Lines', iata: 'DL', icao: 'DAL', logo: '📐', lastUpdated: '2026-06-27',
@@ -311,7 +325,9 @@
                         allianceAllowance: 'SkyTeam operating partners available for priority protection routes when DL prime options are exhausted.',
                         codeshareRules: 'May rebook ticketed DL* flight on operating prime flight when codeshare equivalent is dropped, keeping same inventory tier attributes.',
                         contactEmail: 'global.salessupport@delta.com',
-                        contactPhone: '+1 800 241 4141'
+                        contactPhone: '+1 800 241 4141',
+                        mainAirlineChangePolicy: 'Rebook in same cabin class. For Main Cabin, if original class is unavailable, rebook into next open class up to Y Class.',
+                        oalAirlineChangePolicy: 'Joint Venture codeshare changes (AF/KL/VS) allow open availability mappings. Pure OAL changes must be coordinated directly with trade support desks.'
                     },
                     refundPolicy: { 
                         refundAllowed: true, 
@@ -319,16 +335,17 @@
                         cancellationRefund: true, 
                         majorScheduleChangeRefund: true, 
                         penalty: 'None. Failure to follow specific policy exception guidelines may result in an Agency Debit Memo.', 
+                        waiverRequired: false, 
                         refundWaiverCode: 'Exempt via GDS verification rule', 
                         osiTourCode: 'OSI DL REFUNDED PER UNACCEPTABLE SKED CHG/ DATE' 
                     },
-                    nameCorrection: { typoAllowance: 'Up to 3 characters free in first or middle names.', nicknameRule: 'Bilateral match processing rules dictate swap allowances.', invertedRule: 'Supported via explicit back-office manual intervention entries.', additionalNameRule: 'Allowed with complete travel document verification.', legalChange: 'Allowed with official decree documents', passportMatch: true, penaltyFee: '$150 USD Admin Fee for major swaps', gdsCommand: 'OSI DL NAME CORRECTION SEC', osiString: 'OS DL REISSUE TYPO CORR', techRestrictions: 'GDS operational limitations require active ticket segment validation syncing.', fallbackProcess: 'Manual re-routing or waiver token authorization via support line assistance.', contactEmail: 'trade.support@delta.com', contactPhone: '+1 800 325 1551' }
+                    nameCorrection: { typoAllowance: 'Up to 3 characters free in first or middle names.', nicknameRule: 'Bilateral match processing rules dictate swap allowances.', invertedRule: 'Supported via explicit back-office manual intervention entries.', additionalNameRule: 'Allowed with complete travel document verification.', legalChange: 'Allowed with official decree documents', passportMatch: true, penaltyFee: '$150 USD Admin Fee for major swaps', gdsCommand: 'OSI DL NAME CORRECTION SEC', osiString: 'OS DL REISSUE TYPO CORR', techRestrictions: 'GDS operational limitations require active ticket segment validation syncing.', fallbackProcess: 'Manual re-routing or waiver token authorization via support line assistance.', contactEmail: 'trade.support@delta.com', contactPhone: '+1 800 325 1551', nameOalRule: 'Name corrections are strictly prohibited on external interline ticket rows. You must drop the segments, update the name profile, and request seat re-allocations.' }
                 },
                 {
                     airlineName: 'WestJet Airlines', iata: 'WS', icao: 'WJA', logo: '🍁', lastUpdated: '2026-06-26',
-                    scheduleChange: { minorChange: 'Less than 181 minutes', majorChange: '181 minutes or more (3+ Hours)', threshold: '181 minutes', travelWindow: '+/-2 days', sameCabin: 'Same Cabin Balance Required', sameBookingClass: 'Lowest Class Allowed Fallback', lowestAvailableClass: 'Next highest up to Y (Eco) / W (Prem) / J (Biz)', oalAllowed: true, ticketReissue: true, endorsementCode: 'SKCHG', geoAllowance: 'Within 320 km / 200 miles (e.g. YVR/YXX)', rebookPriority: '1. WestJet Prime -> 2. Commercial partner network agreements.', allianceAllowance: 'Non-alliance point-to-point interline rules apply as designated by commercial bilateral code books.', codeshareRules: 'Pure operating code lines prioritized over complex multi-segment codeshare sectors.', contactEmail: 'agencysalessupport@westjet.com', contactPhone: '+1 877 664 3205' },
+                    scheduleChange: { minorChange: 'Less than 181 minutes', majorChange: '181 minutes or more (3+ Hours)', threshold: '181 minutes', travelWindow: '+/-2 days', sameCabin: 'Same Cabin Balance Required', sameBookingClass: 'Lowest Class Allowed Fallback', lowestAvailableClass: 'Next highest up to Y (Eco) / W (Prem) / J (Biz)', oalAllowed: true, ticketReissue: true, endorsementCode: 'SKCHG', geoAllowance: 'Within 320 km / 200 miles (e.g. YVR/YXX)', rebookPriority: '1. WestJet Prime -> 2. Commercial partner network agreements.', allianceAllowance: 'Non-alliance point-to-point interline rules apply as designated by commercial bilateral code books.', codeshareRules: 'Pure operating code lines prioritized over complex multi-segment codeshare sectors.', contactEmail: 'agencysalessupport@westjet.com', contactPhone: '+1 877 664 3205', mainAirlineChangePolicy: 'Full automated reissue allowed on WestJet flights into identical cabins matching original routing loops.', oalAirlineChangePolicy: 'Rebooking on non-alliance commercial partner flights applies only if prime options are dropped entirely.' },
                     refundPolicy: { refundAllowed: true, refundThreshold: '181 minutes', cancellationRefund: true, majorScheduleChangeRefund: true, penalty: 'Taxes L8/DO non-refundable for PUJ/POP/AZS/LRM', refundWaiverCode: 'Q21SKDRF22', osiTourCode: 'None Specified' },
-                    nameCorrection: { typoAllowance: 'First or middle name up to 3 chars', legalChange: 'Marriage/Divorce certificates accepted', passportMatch: true, penaltyFee: 'UltraBasic excluded, others free for typos', gdsCommand: 'CHNE/GDS SWAP PERMITTED', osiString: 'OS WS TYPO CORR', nicknameRule: 'Bilateral processing constraints dictating swap metrics', invertedRule: 'Re-sync available if operating tags trace cleanly', additionalNameRule: 'Appended upon strict matching criteria evaluation', techRestrictions: 'Split functions must execute prior to modifying profile nodes', fallbackProcess: 'Direct connection support line intervention', contactEmail: 'trade.support@westjet.com', contactPhone: '+1 888 937 8538' }
+                    nameCorrection: { typoAllowance: 'First or middle name up to 3 chars', legalChange: 'Marriage/Divorce certificates accepted', passportMatch: true, penaltyFee: 'UltraBasic excluded, others free for typos', gdsCommand: 'CHNE/GDS SWAP PERMITTED', osiString: 'OS WS TYPO CORR', nicknameRule: 'Bilateral processing constraints dictating swap metrics', invertedRule: 'Re-sync available if operating tags trace cleanly', additionalNameRule: 'Appended upon strict matching criteria evaluation', techRestrictions: 'Split functions must execute prior to modifying profile nodes', fallbackProcess: 'Direct connection support line intervention', contactEmail: 'trade.support@westjet.com', contactPhone: '+1 888 937 8538', nameOalRule: 'Bilateral commercial rules state that OAL partner segments must be cleared before agents manually force name updates over GDS PNR fields.' }
                 }
             ];
             this.selectedAirline = this.airlines[0]; 
@@ -349,10 +366,10 @@
         },
         resetForm() {
             this.formAirline = {
-                airlineName: '', iata: '', icao: '', logo: '✈️', lastUpdated: '2026-06-27',
-                scheduleChange: { minorChange: '', majorChange: '', threshold: '', travelWindow: '', sameCabin: '', sameBookingClass: '', lowestAvailableClass: '', oalAllowed: false, ticketReissue: true, endorsementCode: '', geoAllowance: '', rebookPriority: '', allianceAllowance: '', codeshareRules: '', contactEmail: '', contactPhone: '' },
+                airlineName: '', iata: '', icao: '', logo: '✈️', lastUpdated: '2026-06-29',
+                scheduleChange: { minorChange: '', majorChange: '', threshold: '', travelWindow: '', sameCabin: '', sameBookingClass: '', lowestAvailableClass: '', oalAllowed: false, ticketReissue: true, endorsementCode: '', geoAllowance: '', rebookPriority: '', allianceAllowance: '', codeshareRules: '', contactEmail: '', contactPhone: '', mainAirlinePolicy: '', oalAirlinePolicy: '' },
                 refundPolicy: { refundAllowed: false, refundThreshold: '', cancellationRefund: false, majorScheduleChangeRefund: false, penalty: 'None', refundWaiverCode: '', osiTourCode: '' },
-                nameCorrection: { typoAllowance: '', nicknameRule: '', invertedRule: '', additionalNameRule: '', legalChange: '', passportMatch: true, penaltyFee: '', gdsCommand: '', osiString: '', techRestrictions: '', fallbackProcess: '', contactEmail: '', contactPhone: '' }
+                nameCorrection: { typoAllowance: '', nicknameRule: '', invertedRule: '', additionalNameRule: '', legalChange: '', passportMatch: true, penaltyFee: '', gdsCommand: '', osiString: '', techRestrictions: '', fallbackProcess: '', contactEmail: '', contactPhone: '', nameOalRule: '' }
             };
             this.isEditing = false;
         },
@@ -461,11 +478,19 @@
                             <div><label class="block font-semibold text-slate-400 mb-1">Booking Class (RBD) Rules</label><input type="text" x-model="formAirline.scheduleChange.sameBookingClass" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
                             <div><label class="block font-semibold text-slate-400 mb-1">Fallback Class Target</label><input type="text" x-model="formAirline.scheduleChange.lowestAvailableClass" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
                             <div><label class="block font-semibold text-slate-400 mb-1">Endorsement Waiver Text</label><input type="text" x-model="formAirline.scheduleChange.endorsementCode" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
-                            <div><label class="block font-semibold text-slate-400 mb-1">Geo Allowance Map (Radius rules)</label><input type="text" x-model="formAirline.scheduleChange.geoAllowance" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
+                            <div><label class="block font-semibold text-slate-400 mb-1">Geo Allowance Map</label><input type="text" x-model="formAirline.scheduleChange.geoAllowance" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
                             
                             <div><label class="block font-semibold text-amber-400 mb-1">Rebooking Order Priority</label><input type="text" x-model="formAirline.scheduleChange.rebookPriority" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
                             <div><label class="block font-semibold text-amber-400 mb-1">Alliance Rebooking Allowance</label><input type="text" x-model="formAirline.scheduleChange.allianceAllowance" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
                             <div><label class="block font-semibold text-amber-400 mb-1">Codeshare / Interline Mapping</label><input type="text" x-model="formAirline.scheduleChange.codeshareRules" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
+
+                            <div class="md:col-span-3 bg-slate-950 p-3 rounded-lg border border-slate-800 space-y-3">
+                                <span class="text-amber-400 font-bold tracking-wider uppercase block text-[10px]">Disruption Action Scenarios Matrix</span>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    <div><label class="block font-semibold text-slate-400 mb-1">Policy if Main Airline Causes Change</label><textarea x-model="formAirline.scheduleChange.mainAirlinePolicy" rows="2" class="w-full bg-slate-900 border border-slate-700 p-2 rounded text-white text-xs"></textarea></div>
+                                    <div><label class="block font-semibold text-slate-400 mb-1">Policy if Codeshare/OAL Partner Causes Change</label><textarea x-model="formAirline.scheduleChange.oalAirlinePolicy" rows="2" class="w-full bg-slate-900 border border-slate-700 p-2 rounded text-white text-xs"></textarea></div>
+                                </div>
+                            </div>
                             
                             <div><label class="block font-semibold text-rose-400 mb-1">SKCHG Contact Email</label><input type="text" x-model="formAirline.scheduleChange.contactEmail" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
                             <div class="md:col-span-2"><label class="block font-semibold text-rose-400 mb-1">SKCHG Contact Phone</label><input type="text" x-model="formAirline.scheduleChange.contactPhone" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
@@ -493,7 +518,9 @@
                             <div><label class="block font-semibold text-slate-400 mb-1">Change Penalties / Fees</label><input type="text" x-model="formAirline.nameCorrection.penaltyFee" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
                             <div><label class="block font-semibold text-slate-400 mb-1">GDS Reissue / Swap Command</label><input type="text" x-model="formAirline.nameCorrection.gdsCommand" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
                             <div><label class="block font-semibold text-slate-400 mb-1">OSI / Endorsement Text String</label><input type="text" x-model="formAirline.nameCorrection.osiString" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
-                            <div><label class="block font-semibold text-slate-400 mb-1">Technical Sync & PNR Restrictions</label><input type="text" x-model="formAirline.nameCorrection.techRestrictions" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
+                            
+                            <div class="md:col-span-3"><label class="block font-semibold text-purple-400 mb-1">Name Correction Rules with Codeshare/OAL Flights</label><textarea x-model="formAirline.nameCorrection.nameOalRule" rows="2" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white"></textarea></div>
+                            <div class="md:col-span-3"><label class="block font-semibold text-slate-400 mb-1">Technical Sync Restrictions</label><input type="text" x-model="formAirline.nameCorrection.techRestrictions" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
                             <div class="md:col-span-3"><label class="block font-semibold text-slate-400 mb-1">Non-Feasible Secondary Workarounds (SSR DOCS mapping)</label><input type="text" x-model="formAirline.nameCorrection.fallbackProcess" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
                             
                             <div><label class="block font-semibold text-rose-400 mb-1">Name Correction Contact Email</label><input type="text" x-model="formAirline.nameCorrection.contactEmail" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white" /></div>
@@ -557,6 +584,15 @@
                                                         <div class="flex flex-col space-y-1 bg-slate-950 p-2.5 rounded-lg border border-slate-800" x-show="selectedAirline.scheduleChange.codeshareRules">
                                                             <span class="text-[10px] font-bold text-purple-400 uppercase tracking-wider" x-text="i18n[currentLang].codeshareLabel"></span>
                                                             <p class="text-xs text-slate-300 font-medium leading-relaxed" x-text="selectedAirline.scheduleChange.codeshareRules"></p>
+                                                        </div>
+
+                                                        <div class="flex flex-col space-y-2 bg-slate-950 p-3 rounded-lg border border-slate-800" x-show="selectedAirline.scheduleChange.mainAirlineChangePolicy">
+                                                            <span class="text-[10px] font-bold text-sky-400 uppercase tracking-wider" x-text="i18n[currentLang].mainAirlineChangeLabel"></span>
+                                                            <p class="text-xs text-slate-300 font-medium" x-text="selectedAirline.scheduleChange.mainAirlineChangePolicy"></p>
+                                                        </div>
+                                                        <div class="flex flex-col space-y-2 bg-slate-950 p-3 rounded-lg border border-slate-800" x-show="selectedAirline.scheduleChange.oalAirlineChangePolicy">
+                                                            <span class="text-[10px] font-bold text-amber-500 uppercase tracking-wider" x-text="i18n[currentLang].oalAirlineChangeLabel"></span>
+                                                            <p class="text-xs text-slate-300 font-medium" x-text="selectedAirline.scheduleChange.oalAirlineChangePolicy"></p>
                                                         </div>
 
                                                         <div class="pt-2 mt-2 border-t border-slate-800/60 grid grid-cols-1 gap-2 bg-slate-950/60 p-3 rounded-lg border border-dashed border-slate-800">
@@ -624,6 +660,11 @@
                                                         <div class="flex flex-col space-y-1 bg-slate-950 p-2.5 rounded-lg border border-slate-800" x-show="selectedAirline.nameCorrection?.fallbackProcess">
                                                             <span class="text-[10px] font-bold text-purple-400 uppercase tracking-wider" x-text="i18n[currentLang].fallbackProcessLabel"></span>
                                                             <p class="text-[11px] text-slate-400 leading-relaxed font-medium" x-text="selectedAirline.nameCorrection.fallbackProcess"></p>
+                                                        </div>
+
+                                                        <div class="flex flex-col space-y-1 bg-slate-950 p-2.5 rounded-lg border border-slate-800" x-show="selectedAirline.nameCorrection?.nameOalRule">
+                                                            <span class="text-[10px] font-bold text-purple-400 uppercase tracking-wider" x-text="i18n[currentLang].nameCorrOalLabel"></span>
+                                                            <p class="text-[11px] text-slate-300 leading-relaxed font-medium" x-text="selectedAirline.nameCorrection.nameOalRule"></p>
                                                         </div>
 
                                                         <div class="pt-2 mt-2 border-t border-slate-800/60 grid grid-cols-1 gap-2 bg-slate-950/60 p-3 rounded-lg border border-dashed border-slate-800">
