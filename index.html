@@ -20,6 +20,11 @@
         activePolicy: 'pure_skchg', 
         airlines: [],
 
+        // Dynamic additions state manager
+        newCustomLabel: '',
+        newCustomValue: '',
+        newCustomStatus: true,
+
         i18n: {
             en: {
                 title: 'DISRUPTION DESK',
@@ -186,7 +191,7 @@
                     pureName: {
                         fields: [
                             { label: 'Self-Service Typo Tolerance Threshold', value: 'Up to two (2) letters in first/middle/last name or title (e.g. BRWON to BROWN) via GDS.', allowed: true },
-                            { label: 'Nickname / Alternative Variant Mapping', value: 'Correction of common variants (e.g., BILL to WILLIAM) must be routed to Lufthansa Group.', allowed: false },
+                            { label: 'Nickname / Alternative Variant Mapping', value: 'Correction of common nicknames/variants (e.g., BILL to WILLIAM) must be routed to Lufthansa Group.', allowed: false },
                             { label: 'Inverted Given/Surname Sequence Rules', value: 'Correction of names in an inverted sequence (e.g., PETER/WILLIAM to WILLIAM/PETER) must be handled by Lufthansa Group Agency Support.', allowed: false },
                             { label: 'Adding Second First/Middle/Last Names', value: 'Adding a first, middle, or last name as per travel document (proof required) is managed by Lufthansa Group Agency Support.', allowed: false },
                             { label: 'Legal / Marriage Changes', value: 'Passenger name changes due to marriage, divorce, gender reassignment, legal proceedings and/or a new passport/ID are allowed with valid proof.', allowed: true },
@@ -229,10 +234,10 @@
                     threshold: '60 minutes', travelWindow: '+/-7 days (Sun/Intl market up to +/-30 days)', oalRebookingVal: 'ALLOWED', refundEligVal: 'YES',
                     pureSkchg: {
                         fields: [
-                            { label: 'MINOR CHANGE PROFILE', value: 'Less than 60 minutes time deviation.', allowed: true },
-                            { label: 'MAJOR CHANGE PROFILE', value: '60 minutes or more / Operating carrier change / Stop added.', allowed: true },
-                            { label: 'CABIN MATCHING RULES', value: 'Strict Cabin Balance Required.', allowed: false },
-                            { label: 'BOOKING CLASS (RBD) RULES', value: 'Use original RBD. Fallback to lowest open code up to M class.', allowed: true },
+                            { label: 'Minor Change Profile', value: 'Less than 60 minutes time deviation.', allowed: true },
+                            { label: 'Major Change Profile', value: '60 minutes or more / Operating carrier change / Stop added.', allowed: true },
+                            { label: 'Cabin Matching Rules', value: 'Strict Cabin Balance Required.', allowed: false },
+                            { label: 'Booking Class (RBD) Rules', value: 'Use original RBD. Fallback to lowest open code up to M class.', allowed: true },
                             { label: 'INVENTORY FALLBACK TARGET', value: 'Original booking class preferred; up to Y class maximum fallback.', allowed: true },
                             { label: 'ENDORSEMENT BOX WAIVER TEXT', value: 'DUE SKCH', allowed: true },
                             { label: 'GEO AIRPORT ALLOWANCE MAP', value: 'Sister cities or alternate nodes within 200 miles radius permitted.', allowed: true },
@@ -288,7 +293,7 @@
                             { label: 'Technical Sync Restrictions', value: 'OAL channels automatically drop connection blocks if names are modified directly on original records.', allowed: false },
                             { label: 'Non-Feasible Secondary Workarounds', value: 'Generate split profiles inside the native workstation system parameters.', allowed: true },
                             { label: 'OAL Name Email', value: 'trade.ca@aircanada.ca', allowed: true },
-                                { label: 'OAL Name Phone', value: '+1 888 247 2262', allowed: true }
+                            { label: 'OAL Name Phone', value: '+1 888 247 2262', allowed: true }
                         ]
                     }
                 }
@@ -308,6 +313,20 @@
                 this.isAdminMode = true;
                 this.adminPasswordInput = '';
             } else { alert('Access Denied'); }
+        },
+        addCustomField(pillar) {
+            if(!this.newCustomLabel) return alert('Please enter a Field Title Name');
+            const targetPillarKey = pillar === 'pure_skchg' ? 'pureSkchg' : pillar === 'pure_name' ? 'pureName' : pillar === 'oal_skchg' ? 'oalSkchg' : 'oalName';
+            this.formAirline[targetPillarKey].fields.push({
+                label: this.newCustomLabel,
+                value: this.newCustomValue,
+                allowed: this.newCustomStatus
+            });
+            this.newCustomLabel = ''; this.newCustomValue = ''; this.newCustomStatus = true;
+        },
+        removeCustomField(pillar, idx) {
+            const targetPillarKey = pillar === 'pure_skchg' ? 'pureSkchg' : pillar === 'pure_name' ? 'pureName' : pillar === 'oal_skchg' ? 'oalSkchg' : 'oalName';
+            this.formAirline[targetPillarKey].fields.splice(idx, 1);
         },
         saveAirline() {
             if(!this.formAirline.airlineName || !this.formAirline.iata) return alert('Airline data incomplete.');
@@ -404,12 +423,12 @@
                         <h3 class="text-sm font-bold text-amber-400 tracking-wider uppercase">INJECT NEW FLEET POLICY RULESET</h3>
                         <button @click="resetForm()" class="bg-slate-800 text-xs px-2.5 py-1 rounded text-slate-300">Clear Form</button>
                     </div>
-                    
+
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-xs">
-                        <div><label class="block font-semibold text-slate-400 mb-1">Airline Name</label><input type="text" x-model="formAirline.airlineName" class="w-full bg-[#070b19] border border-slate-800 p-2 rounded text-white" /></div>
-                        <div><label class="block font-semibold text-slate-400 mb-1">IATA Code</label><input type="text" x-model="formAirline.iata" :disabled="isEditing" class="w-full bg-[#070b19] border border-slate-800 p-2 rounded text-white" /></div>
-                        <div><label class="block font-semibold text-slate-400 mb-1">SKD CHG Trigger Metric</label><input type="text" x-model="formAirline.threshold" class="w-full bg-[#070b19] border border-slate-800 p-2 rounded" /></div>
-                        <div><label class="block font-semibold text-slate-400 mb-1">Travel Window Metric</label><input type="text" x-model="formAirline.travelWindow" class="w-full bg-[#070b19] border border-slate-800 p-2 rounded" /></div>
+                        <div><label class="block text-slate-400 mb-1">Airline Name</label><input type="text" x-model="formAirline.airlineName" class="w-full bg-[#070b19] border border-slate-800 p-2 rounded text-white" /></div>
+                        <div><label class="block text-slate-400 mb-1">IATA Code</label><input type="text" x-model="formAirline.iata" :disabled="isEditing" class="w-full bg-[#070b19] border border-slate-800 p-2 rounded text-white" /></div>
+                        <div><label class="block text-amber-400 mb-1">SKD CHG Trigger Metric</label><input type="text" x-model="formAirline.threshold" class="w-full bg-[#070b19] border border-slate-800 p-2 rounded" /></div>
+                        <div><label class="block text-sky-400 mb-1">Travel Window Metric</label><input type="text" x-model="formAirline.travelWindow" class="w-full bg-[#070b19] border border-slate-800 p-2 rounded" /></div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-xs pt-2">
@@ -420,9 +439,23 @@
                     </div>
 
                     <div class="bg-[#070b19] p-4 rounded-xl border border-slate-800 space-y-4">
+                        
+                        <div class="p-3 bg-slate-950 border border-dashed border-slate-800 rounded-lg grid grid-cols-1 md:grid-cols-4 gap-3 items-end">
+                            <div><label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">New Custom Field Title</label><input type="text" x-model="newCustomLabel" placeholder="e.g. EXTRA FIELD LABEL" class="w-full bg-[#070b19] border border-slate-800 p-1.5 rounded text-white" /></div>
+                            <div class="md:col-span-2"><label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Guideline Policy Descriptions Content</label><input type="text" x-model="newCustomValue" placeholder="Description content string goes here..." class="w-full bg-[#070b19] border border-slate-800 p-1.5 rounded text-white" /></div>
+                            <div>
+                                <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Validation Seal Stamp</label>
+                                <div class="flex border border-slate-800 rounded overflow-hidden p-0.5 bg-[#070b19]">
+                                    <button type="button" @click="newCustomStatus = true" :class="newCustomStatus ? 'bg-emerald-600 font-bold' : 'text-slate-500'" class="flex-1 py-1 rounded text-[9px]">✅ ALLOW</button>
+                                    <button type="button" @click="newCustomStatus = false" :class="!newCustomStatus ? 'bg-rose-600 font-bold' : 'text-slate-500'" class="flex-1 py-1 rounded text-[9px]">❌ PROHIB</button>
+                                </div>
+                            </div>
+                            <button type="button" @click="addCustomField(activePolicy)" class="md:col-span-4 w-full py-2 bg-indigo-600 hover:bg-indigo-500 font-bold uppercase rounded text-[10px] transition">➕ Inject Variable Node Row Field Into Dynamic View</button>
+                        </div>
+
                         <div class="space-y-2 max-h-[400px] overflow-y-auto pr-1">
                             <template x-for="(field, index) in formAirline[activePolicy === 'pure_skchg' ? 'pureSkchg' : activePolicy === 'pure_name' ? 'pureName' : activePolicy === 'oal_skchg' ? 'oalSkchg' : 'oalName'].fields" :key="index">
-                                <div class="bg-[#0b1329] border border-slate-800 p-2 rounded-lg flex flex-col md:flex-row items-start md:items-center gap-3 text-xs">
+                                <div class="bg-[#0b1329] border border-slate-800 p-2 rounded-lg flex flex-col md:flex-row items-start md:items-center gap-3 text-xs shadow-md">
                                     <div class="w-full md:w-1/3">
                                         <label class="block text-[9px] uppercase text-slate-500 mb-0.5">Field Variable Name (Changeable / Dynamic)</label>
                                         <input type="text" x-model="field.label" class="w-full bg-slate-950 border border-slate-800 p-1.5 rounded font-bold text-sky-400" />
@@ -431,11 +464,12 @@
                                         <label class="block text-[10px] uppercase text-slate-500 mb-0.5">Policy Content Guidelines Description</label>
                                         <textarea x-model="field.value" class="w-full bg-slate-950 border border-slate-800 p-1.5 rounded text-slate-200" rows="1"></textarea>
                                     </div>
-                                    <div class="w-full md:w-auto flex items-center space-x-2 pt-4 md:pt-0">
+                                    <div class="w-full md:w-auto flex items-center space-x-3 pt-3 md:pt-0">
                                         <div class="flex bg-slate-950 border border-slate-800 p-0.5 rounded">
                                             <button type="button" @click="field.allowed = true" :class="field.allowed ? 'bg-emerald-600 text-white font-bold' : 'text-slate-500'" class="px-2 py-1 rounded text-[9px]">✅</button>
                                             <button type="button" @click="field.allowed = false" :class="!field.allowed ? 'bg-rose-600 text-white font-bold' : 'text-slate-500'" class="px-2 py-1 rounded text-[9px]">❌</button>
                                         </div>
+                                        <button type="button" @click="removeCustomField(activePolicy, index)" class="text-rose-500 hover:text-rose-400 bg-rose-500/10 p-2 rounded border border-rose-500/20 font-bold transition">🗑️ Delete</button>
                                     </div>
                                 </div>
                             </template>
