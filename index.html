@@ -48,15 +48,6 @@
         targetColumnType: 'skchg', 
         targetConditionType: 'normal', 
 
-        i18n: {
-            en: {
-                title: 'DISRUPTION DESK',
-                subtitle: 'Airline Policy Reference Hub',
-                searchPlaceholder: 'Carrier, IATA, ICAO...',
-                noSelection: 'No Airline Selected'
-            }
-        },
-
         formAirline: {
             airlineName: '', iata: '', icao: '', logo: '✈️', lastUpdated: '2026-06-30',
             policyWebLink: '', policyPdfLink: '',
@@ -180,7 +171,6 @@
             }
         },
 
-        // 🛠️ FIX: EXPLICIT DEEP MAP TEMPLATES ARE ASSIGNED IMMEDIATELY TO GUARANTEE INJECTS DON'T CRASH
         saveAirline() {
             if(!this.formAirline.airlineName) return alert('Airline Name is required to save.');
             
@@ -221,7 +211,7 @@
             }
             
             localStorage.setItem('disruption_desk_fleet_data', JSON.stringify(this.airlines));
-            this.selectedAirline = freshBase;
+            this.selectedAirline = this.airlines.find(a => a.iata === freshBase.iata);
             this.isEditing = false; this.isAdminMode = false; this.resetForm();
         },
 
@@ -317,10 +307,18 @@
             <div class="lg:col-span-3 space-y-6">
                 
                 <div class="bg-slate-900 border border-slate-800 p-1.5 rounded-xl grid grid-cols-2 md:grid-cols-4 gap-1.5">
-                    <button @click="activePolicy = 'pure_skchg'" :class="activePolicy === 'pure_skchg' ? 'bg-gradient-to-r from-sky-600 to-indigo-600 text-white shadow font-bold' : 'text-slate-400'" class="py-2 rounded-lg font-semibold" x-text="i18n[currentLang].tabPureSkchg"></button>
-                    <button @click="activePolicy = 'pure_name'" :class="activePolicy === 'pure_name' ? 'bg-gradient-to-r from-sky-600 to-indigo-600 text-white shadow font-bold' : 'text-slate-400'" class="py-2 rounded-lg font-semibold" x-text="i18n[currentLang].tabPureName"></button>
-                    <button @click="activePolicy = 'oal_skchg'" :class="activePolicy === 'oal_skchg' ? 'bg-gradient-to-r from-amber-600 to-orange-600 text-white shadow font-bold' : 'text-slate-400'" class="py-2 rounded-lg font-semibold" x-text="i18n[currentLang].tabOalSkchg"></button>
-                    <button @click="activePolicy = 'oal_name'" :class="activePolicy === 'oal_name' ? 'bg-gradient-to-r from-amber-600 to-orange-600 text-white shadow font-bold' : 'text-slate-400'" class="py-2 rounded-lg font-semibold" x-text="i18n[currentLang].tabOalName"></button>
+                    <button @click="activePolicy = 'pure_skchg'" :class="activePolicy === 'pure_skchg' ? 'bg-gradient-to-r from-sky-600 to-indigo-600 text-white shadow font-bold' : 'text-slate-400 hover:text-slate-200'" class="py-2 rounded-lg font-semibold transition">
+                        🔄 Pure Airline: Schedule Change
+                    </button>
+                    <button @click="activePolicy = 'pure_name'" :class="activePolicy === 'pure_name' ? 'bg-gradient-to-r from-sky-600 to-indigo-600 text-white shadow font-bold' : 'text-slate-400 hover:text-slate-200'" class="py-2 rounded-lg font-semibold transition">
+                        📝 Pure Airline: Name Correction
+                    </button>
+                    <button @click="activePolicy = 'oal_skchg'" :class="activePolicy === 'oal_skchg' ? 'bg-gradient-to-r from-amber-600 to-orange-600 text-white shadow font-bold' : 'text-slate-400 hover:text-slate-200'" class="py-2 rounded-lg font-semibold transition">
+                        ✈️ OAL Policy: Schedule Change
+                    </button>
+                    <button @click="activePolicy = 'oal_name'" :class="activePolicy === 'oal_name' ? 'bg-gradient-to-r from-amber-600 to-orange-600 text-white shadow font-bold' : 'text-slate-400 hover:text-slate-200'" class="py-2 rounded-lg font-semibold transition">
+                        ⌨️ OAL Policy: Name Correction
+                    </button>
                 </div>
 
                 <div x-show="isAdminMode" class="bg-[#0b1329] border border-slate-800 rounded-xl p-6 shadow-2xl space-y-6">
@@ -544,7 +542,7 @@
                         </div>
                     </template>
                     <template x-if="!selectedAirline">
-                        <div class="bg-slate-900 border border-slate-800 p-12 text-center rounded-xl font-medium text-slate-500 uppercase tracking-widest shadow-inner">No Airline Selected</div>
+                        <div class="bg-slate-900 border border-slate-800 p-12 text-center rounded-xl font-medium text-slate-500 uppercase tracking-widest shadow-inner" x-text="i18n[currentLang].noSelection"></div>
                     </template>
                 </div>
 
