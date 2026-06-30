@@ -98,10 +98,10 @@
         },
 
         forceResetDatabase() {
-            if(confirm('Wipe local browser storage and reload default template configurations?')) {
+            if(confirm('Wipe local storage cache and reload defaults?')) {
                 localStorage.removeItem('disruption_desk_fleet_data');
                 this.loadDefaults();
-                alert('Database completely reset!');
+                alert('Database refreshed successfully!');
             }
         },
 
@@ -167,8 +167,7 @@
                             { label: 'MAJOR CHANGE PROFILE', value: '181 minutes or more (3+ Hours) time variation change.', allowed: true },
                             { label: 'BOOKING CLASS (RBD) RULES', value: 'Lowest Class Allowed Fallback inside cabin.', allowed: true },
                             { label: 'ENDORSEMENT BOX WAIVER TEXT', value: 'SKCHG', allowed: true },
-                            { label: 'INVOLUNTARY CANCEL REFUND', value: 'Full Refund Authorized', allowed: true },
-                            { label: 'INVOLUNTARY ADMIN PENALTIES', value: 'None for involuntary', allowed: true }
+                            { label: 'INVOLUNTARY CANCEL REFUND', value: 'Full Refund Authorized', allowed: true }
                         ],
                         iropRefund: []
                     },
@@ -196,7 +195,7 @@
                         this.selectedAirline = this.airlines[0];
                         return;
                     }
-                } catch(e) { console.error('Corrupted cache data.'); }
+                } catch(e) { console.error('Corrupted cache detected.'); }
             }
             this.loadDefaults();
         },
@@ -475,9 +474,6 @@
                                         <a :href="selectedAirline.policyPdfLink" target="_blank" download class="flex items-center space-x-2 bg-slate-950 hover:bg-emerald-950 border border-slate-700/60 hover:border-emerald-500 text-slate-300 hover:text-emerald-400 px-4 py-3 rounded-lg transition shadow-md">
                                             <span>📥</span> <span>Download Reference Guidelines (PDF)</span>
                                         </a>
-                                    </template>
-                                    <template x-if="!selectedAirline.policyWebLink && !selectedAirline.policyPdfLink">
-                                        <p class="text-slate-500 italic py-1">No verified external attachments uploaded for this carrier.</p>
                                     </template>
                                 </div>
                             </div>
