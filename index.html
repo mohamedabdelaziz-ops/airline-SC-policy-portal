@@ -76,6 +76,25 @@
             oalName: { fields: [] }
         },
 
+        verifyUser() {
+            let u = this.userUsernameInput.trim().toLowerCase();
+            let p = this.userPasswordInput.trim();
+            let found = this.validUsers.find(user => user.username.toLowerCase() === u && user.password === p);
+            if(found) {
+                this.isLoggedIn = true;
+                this.userUsernameInput = '';
+                this.userPasswordInput = '';
+            } else {
+                alert('Invalid Username or Password');
+            }
+        },
+
+        logout() {
+            this.isLoggedIn = false;
+            this.isAdminMode = false;
+            this.resetForm();
+        },
+
         isInternalField(label) {
             if (!label) return false;
             const lowerLabel = label.toLowerCase();
@@ -154,25 +173,6 @@
                 } catch(e) { console.error('Corrupted cache data.'); }
             }
             this.loadDefaults();
-        },
-
-        verifyUser() {
-            let u = this.userUsernameInput.trim().toLowerCase();
-            let p = this.userPasswordInput.trim();
-            let found = this.validUsers.find(user => user.username.toLowerCase() === u && user.password === p);
-            if(found) {
-                this.isLoggedIn = true;
-                this.userUsernameInput = '';
-                this.userPasswordInput = '';
-            } else {
-                alert('Invalid Username or Password');
-            }
-        },
-
-        logout() {
-            this.isLoggedIn = false;
-            this.isAdminMode = false;
-            this.resetForm();
         },
 
         addCustomField(pillar) {
@@ -291,14 +291,14 @@
                 <div class="space-y-3 text-left">
                     <div>
                         <label class="block text-slate-400 mb-1 text-[10px] uppercase tracking-wider font-semibold">Username</label>
-                        <input type="text" x-model="userUsernameInput" placeholder="Enter username..." class="w-full bg-[#070b19] border border-slate-800 p-2.5 rounded-lg text-white font-mono placeholder:text-slate-600 focus:outline-none" />
+                        <input type="text" x-model="userUsernameInput" placeholder="Enter username..." class="w-full bg-[#070b19] border border-slate-800 p-2.5 rounded-lg text-white font-mono placeholder:text-slate-600 focus:outline-none focus:ring-1 focus:ring-sky-500" />
                     </div>
                     <div>
                         <label class="block text-slate-400 mb-1 text-[10px] uppercase tracking-wider font-semibold">Password</label>
-                        <input type="password" x-model="userPasswordInput" @keyup.enter="verifyUser()" placeholder="••••••••" class="w-full bg-[#070b19] border border-slate-800 p-2.5 rounded-lg text-white font-mono placeholder:text-slate-600 focus:outline-none" />
+                        <input type="password" x-model="userPasswordInput" @keyup.enter="verifyUser()" placeholder="••••••••" class="w-full bg-[#070b19] border border-slate-800 p-2.5 rounded-lg text-white font-mono placeholder:text-slate-600 focus:outline-none focus:ring-1 focus:ring-sky-500" />
                     </div>
                 </div>
-                <button @click="verifyUser()" class="w-full py-2.5 bg-gradient-to-r from-sky-600 to-indigo-600 text-white font-bold uppercase rounded-lg shadow-lg tracking-wider transition">Unlock Terminal</button>
+                <button @click="verifyUser()" class="w-full py-2.5 bg-gradient-to-r from-sky-600 to-indigo-600 text-white font-bold uppercase rounded-lg shadow-lg tracking-wider hover:from-sky-500 hover:to-indigo-500 transition">Unlock Terminal</button>
             </div>
         </div>
 
@@ -322,6 +322,7 @@
                         <input type="password" placeholder="Admin Key..." x-model="adminPasswordInput" @keyup.enter="verifyAdmin()" class="bg-slate-950 border-0 outline-none text-xs px-2 py-1 rounded text-white w-20" />
                         <button @click="verifyAdmin()" class="bg-slate-800 hover:bg-sky-600 text-white font-bold text-[10px] px-2 py-1 rounded ml-1 transition">Auth</button>
                     </div>
+
                     <button @click="logout()" class="text-[10px] border border-rose-900/50 bg-rose-950/40 hover:bg-rose-900 text-rose-200 px-3 py-1.5 rounded transition uppercase font-bold">Sign Out</button>
                 </div>
             </nav>
@@ -366,11 +367,20 @@
                 </div>
 
                 <div class="lg:col-span-3 space-y-6">
+                    
                     <div class="bg-slate-900 border border-slate-800 p-1.5 rounded-xl grid grid-cols-2 md:grid-cols-4 gap-1.5">
-                        <button @click="activePolicy = 'pure_skchg'" :class="activePolicy === 'pure_skchg' ? 'bg-gradient-to-r from-sky-600 to-indigo-600 text-white shadow font-bold' : 'text-slate-400 hover:text-slate-200'" class="py-2 rounded-lg font-semibold transition">🔄 Pure Airline: Schedule Change</button>
-                        <button @click="activePolicy = 'pure_name'" :class="activePolicy === 'pure_name' ? 'bg-gradient-to-r from-sky-600 to-indigo-600 text-white shadow font-bold' : 'text-slate-400 hover:text-slate-200'" class="py-2 rounded-lg font-semibold transition">📝 Pure Airline: Name Correction</button>
-                        <button @click="activePolicy = 'oal_skchg'" :class="activePolicy === 'oal_skchg' ? 'bg-gradient-to-r from-amber-600 to-orange-600 text-white shadow font-bold' : 'text-slate-400 hover:text-slate-200'" class="py-2 rounded-lg font-semibold transition">✈️ OAL Policy: Schedule Change</button>
-                        <button @click="activePolicy = 'oal_name'" :class="activePolicy === 'oal_name' ? 'bg-gradient-to-r from-amber-600 to-orange-600 text-white shadow font-bold' : 'text-slate-400 hover:text-slate-200'" class="py-2 rounded-lg font-semibold transition">⌨️ OAL Policy: Name Correction</button>
+                        <button @click="activePolicy = 'pure_skchg'" :class="activePolicy === 'pure_skchg' ? 'bg-gradient-to-r from-sky-600 to-indigo-600 text-white shadow font-bold' : 'text-slate-400 hover:text-slate-200'" class="py-2 rounded-lg font-semibold transition">
+                            🔄 Pure Airline: Schedule Change
+                        </button>
+                        <button @click="activePolicy = 'pure_name'" :class="activePolicy === 'pure_name' ? 'bg-gradient-to-r from-sky-600 to-indigo-600 text-white shadow font-bold' : 'text-slate-400 hover:text-slate-200'" class="py-2 rounded-lg font-semibold transition">
+                            📝 Pure Airline: Name Correction
+                        </button>
+                        <button @click="activePolicy = 'oal_skchg'" :class="activePolicy === 'oal_skchg' ? 'bg-gradient-to-r from-amber-600 to-orange-600 text-white shadow font-bold' : 'text-slate-400 hover:text-slate-200'" class="py-2 rounded-lg font-semibold transition">
+                            ✈️ OAL Policy: Schedule Change
+                        </button>
+                        <button @click="activePolicy = 'oal_name'" :class="activePolicy === 'oal_name' ? 'bg-gradient-to-r from-amber-600 to-orange-600 text-white shadow font-bold' : 'text-slate-400 hover:text-slate-200'" class="py-2 rounded-lg font-semibold transition">
+                            ⌨️ OAL Policy: Name Correction
+                        </button>
                     </div>
 
                     <div x-show="isAdminMode" class="bg-[#0b1329] border border-slate-800 rounded-xl p-6 shadow-2xl space-y-6">
@@ -571,4 +581,34 @@
                                                     
                                                     <span class="text-[10px] font-bold text-amber-500 tracking-widest uppercase block bg-slate-950 p-1 border-l-2 border-amber-500 pt-2">IROPS Disruption Refund Protocols</span>
                                                     <template x-for="(field, index) in selectedAirline[activePolicy === 'pure_skchg' ? 'pureSkchg' : 'oalSkchg']?.iropRefund" :key="'live-refund-irop-'+index">
-                                                        <div x-show="viewMode === 'agent' || !isInternalField(field.label)" class="flex flex-col border-b border-slate-800/40 pb-2.5 animate
+                                                        <div x-show="viewMode === 'agent' || !isInternalField(field.label)" class="flex flex-col border-b border-slate-800/40 pb-2.5 animate-fadeIn">
+                                                            <div class="flex justify-between items-center mb-1">
+                                                                <span class="text-emerald-400 font-bold uppercase text-[10px]" x-text="field.label"></span>
+                                                                <span :class="field.allowed ? 'text-emerald-500 bg-emerald-500/10 border border-emerald-500/20' : text-rose-500 bg-rose-500/10 border border-rose-500/20'" class="text-[9px] px-1.5 rounded font-mono font-bold" x-text="field.allowed ? 'ALLOWED' : 'PROHIBITED'"></span>
+                                                            </div>
+                                                            <p class="text-slate-200 font-medium leading-relaxed select-text" x-text="field.value"></p>
+                                                        </div>
+                                                    </template>
+                                                </div>
+                                            </template>
+
+                                            <template x-if="!activePolicy.includes('skchg')">
+                                                <div class="space-y-4">
+                                                    <p class="text-slate-500 italic text-center py-4">Workstation layout commands, rules, and system formats are synced directly under the Primary targets panel view matrix.</p>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </main>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>
