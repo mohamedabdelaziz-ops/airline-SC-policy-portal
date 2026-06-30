@@ -20,15 +20,17 @@
         activePolicy: 'pure_skchg', 
         airlines: [],
 
+        // Refactored Failsafe Time Engine (Text-based to completely avoid native timepicker element null-pointer crashes)
         zuluInput: '12:00',
         get estOutput() {
             if(!this.zuluInput) return '--:-- --';
             try {
-                const parts = this.zuluInput.split(':');
+                let cleanTime = this.zuluInput.trim().replace(' ', '');
+                let parts = cleanTime.split(':');
                 if(parts.length !== 2) return '--:-- --';
                 let hours = parseInt(parts[0], 10);
-                const minutes = parts[1];
-                if(isNaN(hours) || hours < 0 || hours > 23) return '--:-- --';
+                let minutes = parseInt(parts[1], 10);
+                if(isNaN(hours) || hours < 0 || hours > 23 || isNaN(minutes) || minutes < 0 || minutes > 59) return '--:-- --';
                 
                 let estHours = hours - 5;
                 if (estHours < 0) estHours += 24;
@@ -37,7 +39,7 @@
                 estHours = estHours % 12;
                 if (estHours === 0) estHours = 12; 
                 
-                return String(estHours).padStart(2, '0') + ':' + minutes + ' ' + ampm;
+                return String(estHours).padStart(2, '0') + ':' + String(minutes).padStart(2, '0') + ' ' + ampm;
             } catch(e) { return '--:-- --'; }
         },
 
@@ -84,7 +86,6 @@
             return lowerLabel.includes('gds') || lowerLabel.includes('command') || lowerLabel.includes('osi') || lowerLabel.includes('tour code') || lowerLabel.includes('contact') || lowerLabel.includes('email') || lowerLabel.includes('phone') || lowerLabel.includes('infrastructure') || lowerLabel.includes('technical') || lowerLabel.includes('reissue / swap') || lowerLabel.includes('workaround');
         },
 
-        // Helper to force instantiate nested structural schema blueprints safely
         generateEmptyStructure() {
             return {
                 airlineName: '', iata: '', icao: '', logo: '✈️', lastUpdated: '2026-06-29',
@@ -98,10 +99,10 @@
         },
 
         forceResetDatabase() {
-            if(confirm('This will wipe out all local storage, fix the sidebar crash, and restore the initial default airlines cleanly. Proceed?')) {
+            if(confirm('This will purge all local browser storage, heal the layout pipeline framework, and reload clean template configurations. Proceed?')) {
                 localStorage.removeItem('disruption_desk_fleet_data');
                 this.loadDefaults();
-                alert('Database completely reset and ready!');
+                alert('Database completely reset and unfrozen!');
             }
         },
 
@@ -189,28 +190,20 @@
                         this.selectedAirline = this.airlines[0];
                         return;
                     }
-                } catch(e) { console.error('Corrupted cache data.'); }
+                } catch(e) { console.error('Corrupted cache database layer.'); }
             }
             this.loadDefaults();
-        },
-
-        // Trigger safe empty structures when clicking the New + button
-        prepareNewAirlineForm() {
-            this.formAirline = this.generateEmptyStructure();
-            this.isEditing = false;
         },
 
         addCustomField(pillar) {
             if(!this.newCustomLabel) return alert('Please enter a Field Title Name');
             
-            // Core safety checks ensure field paths aren't left undefined
-            if(!this.formAirline.pureSkchg) this.formAirline.pureSkchg = { normalSkchg: [], iropSkchg: [], normalRefund: [], iropRefund: [] };
-            if(!this.formAirline.pureName) this.formAirline.pureName = { fields: [] };
-            if(!this.formAirline.oalSkchg) this.formAirline.oalSkchg = { normalSkchg: [], iropSkchg: [], normalRefund: [], iropRefund: [] };
-            if(!this.formAirline.oalName) this.formAirline.oalName = { fields: [] };
-
             const targetPillarKey = pillar === 'pure_skchg' ? 'pureSkchg' : pillar === 'pure_name' ? 'pureName' : pillar === 'oal_skchg' ? 'oalSkchg' : 'oalName';
-            
+            if(!this.formAirline[targetPillarKey]) {
+                if(pillar.includes('name')) { this.formAirline[targetPillarKey] = { fields: [] }; }
+                else { this.formAirline[targetPillarKey] = { normalSkchg: [], iropSkchg: [], normalRefund: [], iropRefund: [] }; }
+            }
+
             if(pillar.includes('skchg')) {
                 const arrayKey = this.targetConditionType + (this.targetColumnType === 'skchg' ? 'Skchg' : 'Refund');
                 if(!this.formAirline[targetPillarKey][arrayKey]) this.formAirline[targetPillarKey][arrayKey] = [];
@@ -235,14 +228,11 @@
             }
         },
 
-        // 🛠️ BULLETPROOF DEEP OBJECT INJECTOR AND PERMANENT STORAGE COMMITER Engine
         saveAirline() {
             if(!this.formAirline.airlineName) return alert('Airline Name is required to save.');
             
-            // Build absolute fresh object schema frame
             let freshBase = this.generateEmptyStructure();
             
-            // Copy form overrides across the structural skeleton smoothly
             freshBase.airlineName = this.formAirline.airlineName;
             freshBase.iata = this.formAirline.iata ? this.formAirline.iata.toUpperCase() : this.formAirline.airlineName.substring(0,2).toUpperCase() + Math.floor(Math.random() * 10);
             freshBase.icao = this.formAirline.icao ? this.formAirline.icao.toUpperCase() : '';
@@ -254,7 +244,6 @@
             freshBase.oalRebookingVal = this.formAirline.oalRebookingVal || 'ALLOWED';
             freshBase.refundEligVal = this.formAirline.refundEligVal || 'YES';
 
-            // Safeguard array records deep copy mapping
             if(this.formAirline.pureSkchg) {
                 if(this.formAirline.pureSkchg.normalSkchg) freshBase.pureSkchg.normalSkchg = JSON.parse(JSON.stringify(this.formAirline.pureSkchg.normalSkchg));
                 if(this.formAirline.pureSkchg.iropSkchg) freshBase.pureSkchg.iropSkchg = JSON.parse(JSON.stringify(this.formAirline.pureSkchg.iropSkchg));
@@ -271,7 +260,6 @@
             }
             if(this.formAirline.oalName && this.formAirline.oalName.fields) freshBase.oalName.fields = JSON.parse(JSON.stringify(this.formAirline.oalName.fields));
 
-            // Execute insert or replace safely matching exact unique IATA indices
             const idx = this.airlines.findIndex(a => a.iata === freshBase.iata);
             if(idx !== -1) {
                 this.airlines[idx] = freshBase;
@@ -291,6 +279,11 @@
             if(!this.formAirline.oalSkchg) this.formAirline.oalSkchg = { normalSkchg: [], iropSkchg: [], normalRefund: [], iropRefund: [] };
             if(!this.formAirline.oalName) this.formAirline.oalName = { fields: [] };
             this.isEditing = true; this.isAdminMode = true;
+        },
+
+        prepareNewAirlineForm() {
+            this.formAirline = this.generateEmptyStructure();
+            this.isEditing = false;
         },
 
         resetForm() {
@@ -330,7 +323,7 @@
                 <div class="bg-gradient-to-br from-slate-900 to-indigo-950/40 border border-slate-800 p-5 rounded-xl shadow-xl space-y-3">
                     <div class="flex items-center space-x-2 border-b border-slate-800 pb-2"><span class="text-base">🕰️</span><h4 class="text-xs font-bold uppercase tracking-wider text-slate-300">Zulu Time Converter</h4></div>
                     <div class="space-y-2">
-                        <input type="time" x-model="zuluInput" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white font-mono text-sm focus:outline-none" />
+                        <input type="text" x-model="zuluInput" placeholder="e.g. 17:30" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white font-mono text-sm focus:outline-none focus:ring-1 focus:ring-sky-500" />
                         <div class="bg-slate-950/80 border border-slate-800 p-2.5 rounded-lg flex justify-between items-center">
                             <span class="text-[10px] uppercase text-slate-400 font-semibold">EST Equivalent:</span><span class="text-xs font-bold font-mono text-sky-400" x-text="estOutput"></span>
                         </div>
@@ -515,7 +508,7 @@
                                                             <span class="text-slate-400 font-bold uppercase text-[10px]" x-text="field.label"></span>
                                                             <span :class="field.allowed ? 'text-emerald-500 bg-emerald-500/10 border border-emerald-500/20' : 'text-rose-500 bg-rose-500/10 border border-rose-500/20'" class="text-[9px] px-1.5 rounded font-mono font-bold" x-text="field.allowed ? 'ALLOWED' : 'PROHIBITED'"></span>
                                                         </div>
-                                                        <p class="text-slate-200 font-medium leading-relaxed" x-text="field.value"></p>
+                                                        <p class="text-slate-200 font-medium leading-relaxed select-text" x-text="field.value"></p>
                                                     </div>
                                                 </template>
                                                 
@@ -526,7 +519,7 @@
                                                             <span class="text-slate-400 font-bold uppercase text-[10px]" x-text="field.label"></span>
                                                             <span :class="field.allowed ? 'text-emerald-500 bg-emerald-500/10 border border-emerald-500/20' : 'text-rose-500 bg-rose-500/10 border border-rose-500/20'" class="text-[9px] px-1.5 rounded font-mono font-bold" x-text="field.allowed ? 'ALLOWED' : 'PROHIBITED'"></span>
                                                         </div>
-                                                        <p class="text-slate-200 font-medium leading-relaxed" x-text="field.value"></p>
+                                                        <p class="text-slate-200 font-medium leading-relaxed select-text" x-text="field.value"></p>
                                                     </div>
                                                 </template>
                                             </div>
@@ -540,7 +533,7 @@
                                                             <span class="text-slate-400 font-bold uppercase text-[10px]" x-text="field.label"></span>
                                                             <span :class="field.allowed ? 'text-emerald-500 bg-emerald-500/10 border border-emerald-500/20' : 'text-rose-500 bg-rose-500/10 border border-rose-500/20'" class="text-[9px] px-1.5 rounded font-mono font-bold" x-text="field.allowed ? 'ALLOWED' : 'PROHIBITED'"></span>
                                                         </div>
-                                                        <p class="text-slate-200 font-medium leading-relaxed" x-text="field.value"></p>
+                                                        <p class="text-slate-200 font-medium leading-relaxed select-text" x-text="field.value"></p>
                                                     </div>
                                                 </template>
                                             </div>
@@ -564,7 +557,7 @@
                                                             <span class="text-emerald-400 font-bold uppercase text-[10px]" x-text="field.label"></span>
                                                             <span :class="field.allowed ? 'text-emerald-500 bg-emerald-500/10 border border-emerald-500/20' : 'text-rose-500 bg-rose-500/10 border border-rose-500/20'" class="text-[9px] px-1.5 rounded font-mono font-bold" x-text="field.allowed ? 'ALLOWED' : 'PROHIBITED'"></span>
                                                         </div>
-                                                        <p class="text-slate-200 font-medium leading-relaxed" x-text="field.value"></p>
+                                                        <p class="text-slate-200 font-medium leading-relaxed select-text" x-text="field.value"></p>
                                                     </div>
                                                 </template>
                                                 
@@ -575,7 +568,7 @@
                                                             <span class="text-emerald-400 font-bold uppercase text-[10px]" x-text="field.label"></span>
                                                             <span :class="field.allowed ? 'text-emerald-500 bg-emerald-500/10 border border-emerald-500/20' : 'text-rose-500 bg-rose-500/10 border border-rose-500/20'" class="text-[9px] px-1.5 rounded font-mono font-bold" x-text="field.allowed ? 'ALLOWED' : 'PROHIBITED'"></span>
                                                         </div>
-                                                        <p class="text-slate-200 font-medium leading-relaxed" x-text="field.value"></p>
+                                                        <p class="text-slate-200 font-medium leading-relaxed select-text" x-text="field.value"></p>
                                                     </div>
                                                 </template>
                                             </div>
