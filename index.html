@@ -65,42 +65,6 @@
                 pdfLinkLabel: 'Download Reference Guidelines (PDF)',
                 noLinksText: 'No verified external attachments uploaded for this carrier.',
                 noSelection: 'No Carrier Selection Detected'
-            },
-            ar: {
-                title: 'مكتب الاضطرابات',
-                subtitle: 'مركز مرجع السياسات لشركات الطيران',
-                searchLabel: 'البحث في مؤشر الأسطول',
-                searchPlaceholder: 'الناقل، إياتا، إيكاو...',
-                indexLabel: 'مؤشر تقسيم الشركات',
-                paxView: 'عرض المسافر',
-                agentView: 'عرض الوكيل',
-                tabPureSkchg: '🔄 تغيير الجدول: الشركة الأساسية',
-                tabPureName: '📝 تصحيح الاسم: الشركة الأساسية',
-                tabOalSkchg: '✈️ تغيير الجدول: الشركات الأخرى',
-                tabOalName: '⌨️ تصحيح الاسم: الشركات الأخرى',
-                docSectionHeader: 'OFFICIAL CARRIER DOCUMENT VAULT',
-                webLinkLabel: 'بوابة السياسات الإلكترونية الرسمية',
-                pdfLinkLabel: 'تحميل الدليل الإرشادي (PDF)',
-                noLinksText: 'لا توجد مرفقات خارجية تم التحقق منها لهذا الناقل.',
-                noSelection: 'لم يتم رصد اختيار شركة الطيران'
-            },
-            fr: {
-                title: 'BUREAU DES PERTURBATIONS',
-                subtitle: 'Centre de Référence des Politiques de Vol',
-                searchLabel: 'Rechercher un Vol',
-                searchPlaceholder: 'Compagnie, IATA, ICAO...',
-                indexLabel: 'Index des Compagnies',
-                paxView: 'VUE PASSAGER',
-                agentView: 'VUE AGENT',
-                tabPureSkchg: '🔄 Modification: Ligne Pure',
-                tabPureName: '📝 Correction: Ligne Pure',
-                tabOalSkchg: '✈️ Modification: Partenaire OAL',
-                tabOalName: '⌨️ Correction: Partenaire OAL',
-                docSectionHeader: 'OFFICIAL CARRIER DOCUMENT VAULT',
-                webLinkLabel: 'Portail Officiel des Directives Web',
-                pdfLinkLabel: 'Télécharger les Lignes Directrices (PDF)',
-                noLinksText: 'Aucune pièce jointe externe vérifiée pour ce transporteur.',
-                noSelection: 'Aucune Compagnie Sélectionnée Détectée'
             }
         },
 
@@ -127,56 +91,10 @@
                     this.airlines = JSON.parse(localSavedData);
                     this.selectedAirline = this.airlines[0];
                     return;
-                } catch(e) { console.error('Local storage database parse error.'); }
+                } catch(e) { console.error('Local storage data load failed. Resetting to defaults.'); }
             }
 
             this.airlines = [
-                {
-                    airlineName: 'Delta Air Lines', iata: 'DL', icao: 'DAL', logo: '📐', lastUpdated: '2026-06-29',
-                    policyWebLink: 'https://pro.delta.com', policyPdfLink: '',
-                    threshold: '180', travelWindow: '-/+2 days', oalRebookingVal: 'ALLOWED', refundEligVal: 'YES',
-                    pureSkchg: {
-                        normalSkchg: [
-                            { label: 'MINOR SC', value: 'less than 180 Min', allowed: true },
-                            { label: 'QUALIFICATIONS', value: '➢ For tickets issued after October 28, 2024, if 180 minutes or more for domestic or 360 minutes or more for international itineraries ➢ Downgrade. ➢ Misconnection. ➢ When the only change is a flight number change it\'s a minor Schedule Change', allowed: true },
-                            { label: 'REBOOKING OPTIONS FOR ACCEPTABLE SCHEDULE CHANGE OR IRREGULAR OPERATIONS:', value: 'If the schedule change is acceptable and the ticket has been revalidated, you must enter the following OSI message in the PNR to indicate the customer\'s acceptance', allowed: true },
-                            { label: 'ACCEPTANCE OSI', value: 'OS DL ACCEPT DUE TO DL INVOL', allowed: true }
-                        ],
-                        iropSkchg: [], normalRefund: [], iropRefund: []
-                    },
-                    pureName: { fields: [] }, oalSkchg: { normalSkchg: [], iropSkchg: [], normalRefund: [], iropRefund: [] }, oalName: { fields: [] }
-                },
-                {
-                    airlineName: 'Air Canada', iata: 'AC', icao: 'ACA', logo: '🇨🇦', lastUpdated: '2026-06-29',
-                    policyWebLink: 'https://www.aircanada.com/agency', policyPdfLink: '',
-                    threshold: '180', travelWindow: '-/+30', oalRebookingVal: 'ALLOWED', refundEligVal: 'YES',
-                    pureSkchg: {
-                        normalSkchg: [
-                            { label: 'MINOR CHANGE PROFILE', value: 'Less than 60 minutes time deviation.', allowed: true },
-                            { label: 'CABIN MATCHING RULES', value: 'Strict Cabin Balance Required.', allowed: false },
-                            { label: 'INVENTORY FALLBACK TARGET', value: 'Original booking class preferred; up to Y class maximum fallback.', allowed: true },
-                            { label: 'GEO AIRPORT ALLOWANCE MAP', value: 'Sister cities or alternate nodes within 200 miles radius permitted.', allowed: true }
-                        ],
-                        iropSkchg: [
-                            { label: 'MAJOR CHANGE PROFILE', value: '60 minutes or more / Operating carrier change / Stop added.', allowed: true },
-                            { label: 'POLICY IF MAIN AIRLINE CAUSES CHANGE', value: 'Full complimentary rebooking on AC mainline flights inside identical cabins matching original routing loops.', allowed: true },
-                            { label: 'SKCHG CONTACT PHONE', value: '+1 888 247 2262', allowed: true }
-                        ],
-                        normalRefund: [
-                            { label: 'BOOKING CLASS (RBD) RULES', value: 'Use original RBD. Fallback to lowest open code up to M class.', allowed: true },
-                            { label: 'INVOLUNTARY ADMIN PENALTIES', value: 'None', allowed: true },
-                            { label: 'GDS OSI / TOUR CODE BOX', value: 'OS AC INVOL SKCHG', allowed: true }
-                        ],
-                        iropRefund: [
-                            { label: 'SIGNIFICANT CHANGE TRIGGER', value: 'More than 3 hours deviation', allowed: true },
-                            { label: 'ENDORSEMENT BOX WAIVER TEXT', value: 'DUE SKCH', allowed: true },
-                            { label: 'INVOLUNTARY CANCEL REFUND', value: 'Full Refund Authorized', allowed: true },
-                            { label: 'GDS CASH REFUND WAIVER CODE', value: 'ACUSKEDCHG + Flight Number', allowed: true },
-                            { label: 'SKCHG CONTACT EMAIL', value: 'agency.support@aircanada.ca', allowed: true }
-                        ]
-                    },
-                    pureName: { fields: [] }, oalSkchg: { normalSkchg: [], iropSkchg: [], normalRefund: [], iropRefund: [] }, oalName: { fields: [] }
-                },
                 {
                     airlineName: 'WestJet Airlines', iata: 'WS', icao: 'WJA', logo: '🍁', lastUpdated: '2026-06-26',
                     policyWebLink: 'https://www.westjet.com/en-ca/travel-agents', policyPdfLink: '',
@@ -186,36 +104,46 @@
                             { label: 'MINOR CHANGE PROFILE', value: 'Less than 181 minutes time gap layout change.', allowed: true },
                             { label: 'CABIN MATCHING RULES', value: 'Same Cabin Balance Required.', allowed: false },
                             { label: 'INVENTORY FALLBACK TARGET', value: 'Next highest up to Y (Eco) / W (Prem) / J (Biz).', allowed: true },
-                            { label: 'GEO AIRPORT ALLOWANCE MAP', value: 'Within 320 km / 200 miles (e.g. YVR/YXX)', allowed: true }
+                            { label: 'GEO AIRPORT ALLOWANCE MAP', value: 'Within 320 km / 200 miles (e.g. YVR/YXX)', allowed: true },
+                            { label: 'SIGNIFICANT CHANGE TRIGGER', value: '181 minutes', allowed: true }
                         ],
-                        iropSkchg: [
-                            { label: 'SIGNIFICANT CHANGE TRIGGER', value: '181 minutes or structural cancellation.', allowed: true },
-                            { label: 'POLICY IF MAIN AIRLINE CAUSES CHANGE', value: 'Full automated reissue allowed on WestJet flights into identical cabins matching original routing loops.', allowed: true },
-                            { label: 'SKCHG CONTACT PHONE', value: '+1 877 664 3205', allowed: true }
-                        ],
+                        iropSkchg: [],
                         normalRefund: [
-                            { label: 'BOOKING CLASS (RBD) RULES', value: 'Lowest Class Allowed Fallback inside cabin.', allowed: true },
-                            { label: 'INVOLUNTARY ADMIN PENALTIES', value: 'None for involuntary profiles.', allowed: true },
-                            { label: 'GDS OSI / TOUR CODE BOX', value: 'None Specified', allowed: true }
-                        ],
-                        iropRefund: [
                             { label: 'MAJOR CHANGE PROFILE', value: '181 minutes or more (3+ Hours) time variation change.', allowed: true },
+                            { label: 'BOOKING CLASS (RBD) RULES', value: 'Lowest Class Allowed Fallback inside cabin.', allowed: true },
                             { label: 'ENDORSEMENT BOX WAIVER TEXT', value: 'SKCHG', allowed: true },
                             { label: 'INVOLUNTARY CANCEL REFUND', value: 'Full Refund Authorized', allowed: true },
-                            { label: 'GDS CASH REFUND WAIVER CODE', value: 'Q21SKDRF22', allowed: true },
-                            { label: 'SKCHG CONTACT EMAIL', value: 'agencysalessupport@westjet.com', allowed: true }
-                        ]
+                            { label: 'INVOLUNTARY ADMIN PENALTIES', value: 'None for involuntary', allowed: true }
+                        ],
+                        iropRefund: []
                     },
+                    pureName: { fields: [] }, oalSkchg: { normalSkchg: [], iropSkchg: [], normalRefund: [], iropRefund: [] }, oalName: { fields: [] }
+                },
+                {
+                    airlineName: 'Lufthansa Group', iata: 'LH', icao: 'DLH', logo: 'DE', lastUpdated: '2026-06-29',
+                    policyWebLink: 'https://www.lufthansagroup.com/en/themes/agency-support.html', policyPdfLink: '',
+                    threshold: 'Varies', travelWindow: 'Subject to availability', oalRebookingVal: 'PROHIBITED', refundEligVal: 'YES',
+                    pureSkchg: { normalSkchg: [], iropSkchg: [], normalRefund: [], iropRefund: [] },
+                    pureName: { fields: [] }, oalSkchg: { normalSkchg: [], iropSkchg: [], normalRefund: [], iropRefund: [] }, oalName: { fields: [] }
+                },
+                {
+                    airlineName: 'Air Canada', iata: 'AC', icao: 'ACA', logo: 'CA', lastUpdated: '2026-06-27',
+                    policyWebLink: 'https://www.aircanada.com/agency', policyPdfLink: '',
+                    threshold: '60 minutes', travelWindow: '-/+30 Days', oalRebookingVal: 'ALLOWED', refundEligVal: 'YES',
+                    pureSkchg: { normalSkchg: [], iropSkchg: [], normalRefund: [], iropRefund: [] },
                     pureName: { fields: [] }, oalSkchg: { normalSkchg: [], iropSkchg: [], normalRefund: [], iropRefund: [] }, oalName: { fields: [] }
                 }
             ];
             this.selectedAirline = this.airlines[0];
             localStorage.setItem('disruption_desk_fleet_data', JSON.stringify(this.airlines));
         },
+        verifyAdmin() {
+            if(this.adminPasswordInput === 'admin123') { this.isAdminMode = true; this.adminPasswordInput = ''; } else { alert('Access Denied'); }
+        },
         addCustomField(pillar) {
             if(!this.newCustomLabel) return alert('Please enter a Field Title Name');
-            const targetPillarKey = pillar === 'pure_skchg' ? 'pureSkchg' : pillar === 'pure_name' ? 'pureName' : pillar === 'oal_skchg' ? 'oalSkchg' : 'oalName';
             
+            const targetPillarKey = pillar === 'pure_skchg' ? 'pureSkchg' : pillar === 'pure_name' ? 'pureName' : pillar === 'oal_skchg' ? 'oalSkchg' : 'oalName';
             if(!this.formAirline[targetPillarKey]) {
                 if(pillar.includes('name')) { this.formAirline[targetPillarKey] = { fields: [] }; }
                 else { this.formAirline[targetPillarKey] = { normalSkchg: [], iropSkchg: [], normalRefund: [], iropRefund: [] }; }
@@ -225,12 +153,12 @@
                 const arrayKey = this.targetConditionType + (this.targetColumnType === 'skchg' ? 'Skchg' : 'Refund');
                 if(!this.formAirline[targetPillarKey][arrayKey]) this.formAirline[targetPillarKey][arrayKey] = [];
                 this.formAirline[targetPillarKey][arrayKey].push({
-                    label: this.newCustomLabel, value: this.newCustomValue, allowed: this.newCustomStatus
+                    label: this.newCustomLabel.toUpperCase(), value: this.newCustomValue, allowed: this.newCustomStatus
                 });
             } else {
                 if(!this.formAirline[targetPillarKey].fields) this.formAirline[targetPillarKey].fields = [];
                 this.formAirline[targetPillarKey].fields.push({
-                    label: this.newCustomLabel, value: this.newCustomValue, allowed: this.newCustomStatus
+                    label: this.newCustomLabel.toUpperCase(), value: this.newCustomValue, allowed: this.newCustomStatus
                 });
             }
             this.newCustomLabel = ''; this.newCustomValue = ''; this.newCustomStatus = true;
@@ -292,12 +220,6 @@
             </div>
             
             <div class="flex items-center space-x-4">
-                <div class="bg-slate-950 border border-slate-800 rounded-lg p-1 flex space-x-1">
-                    <button @click="currentLang = 'en'" :class="currentLang === 'en' ? 'bg-sky-600 font-bold text-white' : 'text-slate-400 hover:text-white'" class="px-2 py-1 rounded text-xs transition">EN</button>
-                    <button @click="currentLang = 'ar'" :class="currentLang === 'ar' ? 'bg-sky-600 font-bold text-white' : 'text-slate-400 hover:text-white'" class="px-2 py-1 rounded text-xs transition">AR</button>
-                    <button @click="currentLang = 'fr'" :class="currentLang === 'fr' ? 'bg-sky-600 font-bold text-white' : 'text-slate-400 hover:text-white'" class="px-2 py-1 rounded text-xs transition">FR</button>
-                </div>
-
                 <div class="flex items-center bg-slate-900 border border-slate-800 p-0.5 rounded-lg">
                     <button @click="viewMode = 'customer'" :class="viewMode === 'customer' ? 'bg-sky-600 text-white font-bold' : 'text-slate-400 hover:text-white'" class="px-3 py-1 rounded text-[10px] uppercase transition">PASSENGER VIEW</button>
                     <button @click="viewMode = 'agent'" :class="viewMode === 'agent' ? 'bg-indigo-600 text-white font-bold' : 'text-slate-400 hover:text-white'" class="px-3 py-1 rounded text-[10px] uppercase transition">AGENT VIEW</button>
@@ -459,9 +381,6 @@
                                             <span>📥</span> <span x-text="i18n[currentLang].pdfLinkLabel"></span>
                                         </a>
                                     </template>
-                                    <template x-if="!selectedAirline.policyWebLink && !selectedAirline.policyPdfLink">
-                                        <p class="text-slate-500 italic py-1" x-text="i18n[currentLang].noLinksText"></p>
-                                    </template>
                                 </div>
                             </div>
 
@@ -504,7 +423,7 @@
                                                             <span class="text-slate-400 font-bold uppercase text-[10px]" x-text="field.label"></span>
                                                             <span :class="field.allowed ? 'text-emerald-500 bg-emerald-500/10 border border-emerald-500/20' : 'text-rose-500 bg-rose-500/10 border border-rose-500/20'" class="text-[9px] px-1.5 rounded font-mono font-bold" x-text="field.allowed ? 'ALLOWED' : 'PROHIBITED'"></span>
                                                         </div>
-                                                        <p class="text-slate-200 font-medium leading-relaxed" x-text="field.value"></p>
+                                                        <p class="text-slate-200 font-medium leading-relaxed select-text" x-text="field.value"></p>
                                                     </div>
                                                 </template>
                                                 
@@ -515,7 +434,7 @@
                                                             <span class="text-slate-400 font-bold uppercase text-[10px]" x-text="field.label"></span>
                                                             <span :class="field.allowed ? 'text-emerald-500 bg-emerald-500/10 border border-emerald-500/20' : 'text-rose-500 bg-rose-500/10 border border-rose-500/20'" class="text-[9px] px-1.5 rounded font-mono font-bold" x-text="field.allowed ? 'ALLOWED' : 'PROHIBITED'"></span>
                                                         </div>
-                                                        <p class="text-slate-200 font-medium leading-relaxed" x-text="field.value"></p>
+                                                        <p class="text-slate-200 font-medium leading-relaxed select-text" x-text="field.value"></p>
                                                     </div>
                                                 </template>
                                             </div>
@@ -529,7 +448,7 @@
                                                             <span class="text-slate-400 font-bold uppercase text-[10px]" x-text="field.label"></span>
                                                             <span :class="field.allowed ? 'text-emerald-500 bg-emerald-500/10 border border-emerald-500/20' : 'text-rose-500 bg-rose-500/10 border border-rose-500/20'" class="text-[9px] px-1.5 rounded font-mono font-bold" x-text="field.allowed ? 'ALLOWED' : 'PROHIBITED'"></span>
                                                         </div>
-                                                        <p class="text-slate-200 font-medium leading-relaxed" x-text="field.value"></p>
+                                                        <p class="text-slate-200 font-medium leading-relaxed select-text" x-text="field.value"></p>
                                                     </div>
                                                 </template>
                                             </div>
@@ -553,7 +472,7 @@
                                                             <span class="text-emerald-400 font-bold uppercase text-[10px]" x-text="field.label"></span>
                                                             <span :class="field.allowed ? 'text-emerald-500 bg-emerald-500/10 border border-emerald-500/20' : 'text-rose-500 bg-rose-500/10 border border-rose-500/20'" class="text-[9px] px-1.5 rounded font-mono font-bold" x-text="field.allowed ? 'ALLOWED' : 'PROHIBITED'"></span>
                                                         </div>
-                                                        <p class="text-slate-200 font-medium leading-relaxed" x-text="field.value"></p>
+                                                        <p class="text-slate-200 font-medium leading-relaxed select-text" x-text="field.value"></p>
                                                     </div>
                                                 </template>
                                                 
@@ -564,7 +483,7 @@
                                                             <span class="text-emerald-400 font-bold uppercase text-[10px]" x-text="field.label"></span>
                                                             <span :class="field.allowed ? 'text-emerald-500 bg-emerald-500/10 border border-emerald-500/20' : 'text-rose-500 bg-rose-500/10 border border-rose-500/20'" class="text-[9px] px-1.5 rounded font-mono font-bold" x-text="field.allowed ? 'ALLOWED' : 'PROHIBITED'"></span>
                                                         </div>
-                                                        <p class="text-slate-200 font-medium leading-relaxed" x-text="field.value"></p>
+                                                        <p class="text-slate-200 font-medium leading-relaxed select-text" x-text="field.value"></p>
                                                     </div>
                                                 </template>
                                             </div>
