@@ -48,6 +48,15 @@
         targetColumnType: 'skchg', 
         targetConditionType: 'normal', 
 
+        i18n: {
+            en: {
+                title: 'DISRUPTION DESK',
+                subtitle: 'Airline Policy Reference Hub',
+                searchPlaceholder: 'Carrier, IATA, ICAO...',
+                noSelection: 'No Airline Selected'
+            }
+        },
+
         formAirline: {
             airlineName: '', iata: '', icao: '', logo: '✈️', lastUpdated: '2026-06-30',
             policyWebLink: '', policyPdfLink: '',
@@ -230,8 +239,13 @@
             this.isAdminMode = true;
         },
 
+        // 🛠️ UPGRADED FAILSAFE VERIFICATION CLEANER (Trims spaces and automatically forces lowercase alignment checks)
         verifyAdmin() {
-            if(this.adminPasswordInput === 'admin123') { this.isAdminMode = true; this.adminPasswordInput = ''; } else { alert('Access Denied'); }
+            let cleanPasswordInput = this.adminPasswordInput.trim().toLowerCase();
+            if(cleanPasswordInput === 'admin123') { 
+                this.isAdminMode = true; 
+                this.adminPasswordInput = ''; 
+            } else { alert('Access Denied'); }
         },
 
         resetForm() {
@@ -256,7 +270,7 @@
                 </div>
 
                 <div class="flex items-center bg-slate-900 p-1 border border-slate-800 rounded-lg">
-                    <input type="password" placeholder="Admin Key..." x-model="adminPasswordInput" @keyup.enter="verifyAdmin()" class="bg-slate-950 border-0 outline-none text-xs px-2 py-1 rounded text-white w-20" />
+                    <input type="password" placeholder="Admin Key..." x-model="adminPasswordInput" @keyup.enter="verifyAdmin()" class="bg-slate-950 border-0 outline-none text-xs px-2 py-1 rounded text-white w-20 focus:ring-1 focus:ring-sky-500" />
                     <button @click="verifyAdmin()" class="bg-slate-800 hover:bg-sky-600 text-white font-bold text-[10px] px-2 py-1 rounded ml-1 transition">Auth</button>
                 </div>
                 <template x-if="isAdminMode">
