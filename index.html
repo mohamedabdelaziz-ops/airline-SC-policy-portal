@@ -263,7 +263,7 @@
             if(!this.formAirline.pureSkchg) this.formAirline.pureSkchg = { normalSkchg: [], iropSkchg: [], normalRefund: [], iropRefund: [] };
             if(!this.formAirline.pureName) this.formAirline.pureName = { fields: [] };
             if(!this.formAirline.oalSkchg) this.formAirline.oalSkchg = { normalSkchg: [], iropSkchg: [], normalRefund: [], iropRefund: [] };
-            if(!this.formAirline.oalName) this.formAirline.formName = { fields: [] };
+            if(!this.formAirline.oalName) this.formAirline.oalName = { fields: [] };
             this.isEditing = true; this.isAdminMode = true;
         },
 
@@ -371,7 +371,7 @@
                     </div>
 
                     <div class="flex items-center bg-slate-900 p-1 border border-slate-800 rounded-lg">
-                        <input type="password" placeholder="Admin Key..." x-model="adminPasswordInput" @keyup.enter="verifyAdmin()" class="bg-slate-950 border-0 outline-none text-xs px-2 py-1 rounded text-white w-20" />
+                        <input type="password" placeholder="Admin Key..." x-model="adminPasswordInput" @keyup.enter="verifyAdmin()" class="bg-slate-950 border-0 outline-none text-xs px-2 py-1 rounded text-white w-20 focus:ring-1 focus:ring-sky-500" />
                         <button @click="verifyAdmin()" class="bg-slate-800 hover:bg-sky-600 text-white font-bold text-[10px] px-2 py-1 rounded ml-1 transition">Auth</button>
                     </div>
 
