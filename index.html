@@ -259,7 +259,7 @@
 
         async generateFromPolicyText() {
             if (!this.rawScheduleInput && !this.rawRefundInput) {
-                return alert('Please enter policy content parameter sources first.');
+                return alert('Please enter policy text source parameters first.');
             }
             
             try {
@@ -274,67 +274,67 @@
                 
                 const data = await res.json();
                 
-                this.formAirline.airlineName = data.airlineName || 'Needs Review';
-                this.formAirline.iata = (data.airlineCode || 'ZZ').toUpperCase();
-                this.formAirline.country = data.country || 'Needs Review';
-                this.formAirline.alliance = data.alliance || 'Needs Review';
-                this.formAirline.threshold = data.scheduleChange?.thresholdMinutes || 'Needs Review';
-                this.formAirline.travelWindowBefore = data.travelWindow?.beforeDays || 'Needs Review';
-                this.formAirline.travelWindowAfter = data.travelWindow?.afterDays || 'Needs Review';
-                this.formAirline.validTravelPeriod = data.travelWindow?.validTravelPeriod || 'Needs Review';
+                this.formAirline.airlineName = data.airlineName || '';
+                this.formAirline.iata = (data.airlineCode || '').toUpperCase();
+                this.formAirline.country = data.country || '';
+                this.formAirline.alliance = data.alliance || '';
+                this.formAirline.threshold = data.scheduleChange?.thresholdMinutes || 'N/A';
+                this.formAirline.travelWindowBefore = data.travelWindow?.beforeDays || 'N/A';
+                this.formAirline.travelWindowAfter = data.travelWindow?.afterDays || 'N/A';
+                this.formAirline.validTravelPeriod = data.travelWindow?.validTravelPeriod || 'N/A';
                 
                 this.formAirline.oalRebookingVal = data.rebooking?.oalRebookingAllowed ? 'ALLOWED' : 'PROHIBITED';
                 this.formAirline.refundEligVal = data.refund?.fullyEligible ? 'YES' : 'NO';
                 this.formAirline.atcRequiredVal = data.rebooking?.atcAutomatedAllowed ? 'YES' : 'NO';
                 this.formAirline.waiverRequiredVal = data.rebooking?.waiverCodeRequired ? 'YES' : 'NO';
                 
-                this.formAirline.majorDefinition = data.scheduleChange?.majorDefinition || 'Needs Review';
-                this.formAirline.minorDefinition = data.scheduleChange?.minorDefinition || 'Needs Review';
-                this.formAirline.cancellationRules = data.scheduleChange?.cancellationRules || 'Needs Review';
-                this.formAirline.reprotectedRules = data.scheduleChange?.reprotectedRules || 'Needs Review';
-                this.formAirline.noChangeRules = data.scheduleChange?.noChangeRules || 'Needs Review';
-                this.formAirline.flightNumChanges = data.scheduleChange?.flightNumChanges || 'Needs Review';
-                this.formAirline.equipmentChanges = data.scheduleChange?.equipmentChanges || 'Needs Review';
-                this.formAirline.mctRules = data.scheduleChange?.mctRules || 'Needs Review';
-                this.formAirline.sameDayRules = data.scheduleChange?.sameDayRules || 'Needs Review';
-                this.formAirline.dateChangeRules = data.scheduleChange?.dateChangeRules || 'Needs Review';
-                this.formAirline.timeChangeRules = data.scheduleChange?.timeChangeRules || 'Needs Review';
+                this.formAirline.majorDefinition = data.scheduleChange?.majorDefinition || '';
+                this.formAirline.minorDefinition = data.scheduleChange?.minorDefinition || '';
+                this.formAirline.cancellationRules = data.scheduleChange?.cancellationRules || '';
+                this.formAirline.reprotectedRules = data.scheduleChange?.reprotectedRules || '';
+                this.formAirline.noChangeRules = data.scheduleChange?.noChangeRules || '';
+                this.formAirline.flightNumChanges = data.scheduleChange?.flightNumChanges || '';
+                this.formAirline.equipmentChanges = data.scheduleChange?.equipmentChanges || '';
+                this.formAirline.mctRules = data.scheduleChange?.mctRules || '';
+                this.formAirline.sameDayRules = data.scheduleChange?.sameDayRules || '';
+                this.formAirline.dateChangeRules = data.scheduleChange?.dateChangeRules || '';
+                this.formAirline.timeChangeRules = data.scheduleChange?.timeChangeRules || '';
 
-                this.formAirline.involuntaryRefund = data.refund?.involuntaryRefund || 'Needs Review';
-                this.formAirline.voluntaryRefund = data.refund?.voluntaryRefund || 'Needs Review';
-                this.formAirline.medicalRefund = data.refund?.medicalRefund || 'Needs Review';
-                this.formAirline.skchgRefund = data.refund?.skchgRefund || 'Needs Review';
-                this.formAirline.refundableFare = data.refund?.refundableFare || 'Needs Review';
-                this.formAirline.refundableTaxes = data.refund?.refundableTaxes || 'Needs Review';
-                this.formAirline.penalties = data.refund?.penalties || 'Needs Review';
-                this.formAirline.serviceFees = data.refund?.serviceFees || 'Needs Review';
-                this.formAirline.requiredDocumentsRefund = data.refund?.requiredDocumentsRefund || 'Needs Review';
+                this.formAirline.involuntaryRefund = data.refund?.involuntaryRefund || '';
+                this.formAirline.voluntaryRefund = data.refund?.voluntaryRefund || '';
+                this.formAirline.medicalRefund = data.refund?.medicalRefund || '';
+                this.formAirline.skchgRefund = data.refund?.skchgRefund || '';
+                this.formAirline.refundableFare = data.refund?.refundableFare || '';
+                this.formAirline.refundableTaxes = data.refund?.refundableTaxes || '';
+                this.formAirline.penalties = data.refund?.penalties || '';
+                this.formAirline.serviceFees = data.refund?.serviceFees || '';
+                this.formAirline.requiredDocumentsRefund = data.refund?.requiredDocumentsRefund || '';
 
-                this.formAirline.nameCorrection = data.namePolicy?.nameCorrection || 'Needs Review';
-                this.formAirline.nameChange = data.namePolicy?.nameChange || 'Needs Review';
-                this.formAirline.marriageRules = data.namePolicy?.marriage || 'Needs Review';
-                this.formAirline.divorceRules = data.namePolicy?.divorce || 'Needs Review';
-                this.formAirline.passportUpdate = data.namePolicy?.passportUpdate || 'Needs Review';
+                this.formAirline.nameCorrection = data.namePolicy?.nameCorrection || '';
+                this.formAirline.nameChange = data.namePolicy?.nameChange || '';
+                this.formAirline.marriageRules = data.namePolicy?.marriage || '';
+                this.formAirline.divorceRules = data.namePolicy?.divorce || '';
+                this.formAirline.passportUpdate = data.namePolicy?.passportUpdate || '';
 
-                this.formAirline.carryOnBaggage = data.baggage?.carryOn || 'Needs Review';
-                this.formAirline.checkedBaggage = data.baggage?.checkedBaggage || 'Needs Review';
-                this.formAirline.extraBaggage = data.baggage?.extraBaggage || 'Needs Review';
-                this.formAirline.sportingEquipment = data.baggage?.sportingEquipment || 'Needs Review';
+                this.formAirline.carryOnBaggage = data.baggage?.carryOn || '';
+                this.formAirline.checkedBaggage = data.baggage?.checkedBaggage || '';
+                this.formAirline.extraBaggage = data.baggage?.extraBaggage || '';
+                this.formAirline.sportingEquipment = data.baggage?.sportingEquipment || '';
 
-                this.formAirline.medicalWaiver = data.medical?.medicalWaiver || 'Needs Review';
-                this.formAirline.requiredDocumentsMedical = data.medical?.requiredDocuments || 'Needs Review';
+                this.formAirline.medicalWaiver = data.medical?.medicalWaiver || '';
+                this.formAirline.requiredDocumentsMedical = data.medical?.requiredDocuments || '';
 
-                this.formAirline.admRiskWarnings = data.notes?.admRiskWarnings || 'Needs Review';
-                this.formAirline.additionalRestrictions = data.notes?.additionalRestrictions || 'Needs Review';
-                this.formAirline.internalNotes = data.notes?.internalNotes || 'Needs Review';
+                this.formAirline.admRiskWarnings = data.notes?.admRiskWarnings || '';
+                this.formAirline.additionalRestrictions = data.notes?.additionalRestrictions || '';
+                this.formAirline.internalNotes = data.notes?.internalNotes || '';
                 
                 this.aiConfidence = data.aiConfidenceScore || 0;
                 this.missingFieldsList = data.undeterminedFields || [];
                 this.aiMetricsLoaded = true;
                 
-                alert("✨ AI Generation Complete! Review extracted mappings inside the admin frame parameters below.");
+                alert("✨ Complete! Fields parsed and populated below. Please review your matrix before saving.");
             } catch (e) {
-                alert('Connection monitoring node mapping dropped.');
+                alert('Connection tracking to AI parsing routine dropped.');
             }
         }
     }" class="min-h-screen flex flex-col bg-slate-950 text-slate-100 font-sans antialiased text-xs">
