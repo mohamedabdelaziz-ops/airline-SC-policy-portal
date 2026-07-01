@@ -6,14 +6,8 @@
     <title>Disruption Desk - Airline Policy Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
 </head>
 <body class="bg-slate-950 text-slate-100 font-sans antialiased selection:bg-sky-500 selection:text-white text-xs">
-
-    <script>
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
-    </script>
 
     <div x-data="{
         searchQuery: '',
@@ -22,6 +16,8 @@
         adminPasswordInput: '',
         isEditing: false,
         viewMode: 'agent', 
+        currentLang: 'en',
+        activePolicy: 'pure_skchg', 
         airlines: [],
 
         zuluInput: '12:00',
@@ -33,173 +29,289 @@
                 if(parts.length !== 2) return '--:-- --';
                 let hours = parseInt(parts[0], 10);
                 let minutes = parseInt(parts[1], 10);
-                if(hours < 0 || hours > 23 || minutes < 0 || minutes > 59) return '--:-- --';
+                if(isNaN(hours) || hours < 0 || hours > 23 || isNaN(minutes) || minutes < 0 || minutes > 59) return '--:-- --';
+                
                 let estHours = hours - 5;
                 if (estHours < 0) estHours += 24;
                 const ampm = estHours >= 12 ? 'PM' : 'AM';
+                
                 estHours = estHours % 12;
                 if (estHours === 0) estHours = 12; 
+                
                 return String(estHours).padStart(2, '0') + ':' + String(minutes).padStart(2, '0') + ' ' + ampm;
             } catch(e) { return '--:-- --'; }
         },
 
-        // 14 MANDATORY CORE FIELDS DATA SPECS SHELL
+        newCustomLabel: '',
+        newCustomValue: '',
+        newCustomStatus: true,
+        targetColumnType: 'skchg', 
+        targetConditionType: 'normal', 
+
+        i18n: {
+            en: {
+                title: 'DISRUPTION DESK',
+                subtitle: 'Airline Policy Reference Hub',
+                searchPlaceholder: 'Carrier, IATA, ICAO...',
+                noSelection: 'No Airline Selected'
+            }
+        },
+
         formAirline: {
-            airlineName: '', iata: '', logo: '✈️',
-            reissueQualifications: '',
-            orderOfSelectingAirlines: '',
-            rebookingExceptions: '',
-            reissueGuidelines: '',
-            travelWindow: '',
-            classes: '',
-            originDestination: '',
-            reissueWaiver: '',
-            refundGuidelines: '',
-            refundsPermittedScenarios: '',
-            refundsNotPermittedScenarios: '',
-            forPartiallyUsedTickets: '',
-            refundWaiver: '',
-            policyLink: ''
+            airlineName: '', iata: '', icao: '', logo: '✈️', lastUpdated: '2026-06-30',
+            policyWebLink: '', policyPdfLink: '',
+            threshold: '', travelWindow: '', oalRebookingVal: 'ALLOWED', refundEligVal: 'YES',
+            pureSkchg: { normalSkchg: [], iropSkchg: [], normalRefund: [], iropRefund: [] },
+            pureName: { fields: [] },
+            oalSkchg: { normalSkchg: [], iropSkchg: [], normalRefund: [], iropRefund: [] },
+            oalName: { fields: [] }
+        },
+
+        isInternalField(label) {
+            if (!label) return false;
+            const lowerLabel = label.toLowerCase();
+            return lowerLabel.includes('gds') || lowerLabel.includes('command') || lowerLabel.includes('osi') || lowerLabel.includes('tour code') || lowerLabel.includes('contact') || lowerLabel.includes('email') || lowerLabel.includes('phone') || lowerLabel.includes('infrastructure') || lowerLabel.includes('technical') || lowerLabel.includes('reissue / swap') || lowerLabel.includes('workaround');
         },
 
         generateEmptyStructure() {
             return {
-                airlineName: '', iata: '', logo: '✈️',
-                reissueQualifications: 'N/A', orderOfSelectingAirlines: 'N/A', rebookingExceptions: 'N/A',
-                reissueGuidelines: 'N/A', travelWindow: 'N/A', classes: 'N/A', originDestination: 'N/A',
-                reissueWaiver: 'N/A', refundGuidelines: 'N/A', refundsPermittedScenarios: 'N/A',
-                refundsNotPermittedScenarios: 'N/A', forPartiallyUsedTickets: 'N/A', refundWaiver: 'N/A',
-                policyLink: ''
+                airlineName: '', iata: '', icao: '', logo: '✈️', lastUpdated: '2026-06-30',
+                policyWebLink: '', policyPdfLink: '',
+                threshold: 'N/A', travelWindow: 'N/A', oalRebookingVal: 'ALLOWED', refundEligVal: 'YES',
+                pureSkchg: { normalSkchg: [], iropSkchg: [], normalRefund: [], iropRefund: [] },
+                pureName: { fields: [] },
+                oalSkchg: { normalSkchg: [], iropSkchg: [], normalRefund: [], iropRefund: [] },
+                oalName: { fields: [] }
             };
         },
 
-        // 🤖 MULTI-COMPANIES AI INTELLIGENT CAPTURE SCANNER
-        async handlePdfAutoUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
+        forceResetDatabase() {
+            if(confirm('Wipe local browser cache data and reload default configurations?')) {
+                localStorage.removeItem('disruption_desk_fleet_data');
+                this.loadDefaults();
+                alert('Database completely reset!');
+            }
+        },
 
-            try {
-                const arrayBuffer = await file.arrayBuffer();
-                const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-                let extractedText = '';
-
-                for (let i = 1; i <= pdf.numPages; i++) {
-                    const page = await pdf.getPage(i);
-                    const textContent = await page.getTextContent();
-                    extractedText += textContent.items.map(item => item.str).join(' ') + '\n';
+        loadDefaults() {
+            this.airlines = [
+                {
+                    airlineName: 'Delta Air Lines', iata: 'DL', icao: 'DAL', logo: '📐', lastUpdated: '2026-06-30',
+                    policyWebLink: 'https://pro.delta.com', policyPdfLink: '',
+                    threshold: '180', travelWindow: '-/+2 days', oalRebookingVal: 'ALLOWED', refundEligVal: 'YES',
+                    pureSkchg: {
+                        normalSkchg: [
+                            { label: 'MINOR SC', value: 'less than 180 Min', allowed: true },
+                            { label: 'QUALIFICATIONS', value: '➢ For tickets issued after October 28, 2024, if 180 minutes or more for domestic or 360 minutes or more for international itineraries.', allowed: true },
+                            { label: 'REBOOKING OPTIONS FOR ACCEPTABLE SCHEDULE CHANGE OR IRREGULAR OPERATIONS:', value: 'If the schedule change is acceptable and the ticket has been revalidated, you must enter the following OSI message in the PNR to indicate the customer\'s acceptance', allowed: true },
+                            { label: 'ACCEPTANCE OSI', value: 'OS DL ACCEPT DUE TO DL INVOL', allowed: true }
+                        ],
+                        iropSkchg: [], normalRefund: [], iropRefund: []
+                    },
+                    pureName: { fields: [] }, oalSkchg: { normalSkchg: [], iropSkchg: [], normalRefund: [], iropRefund: [] }, oalName: { fields: [] }
+                },
+                {
+                    airlineName: 'Air Canada', iata: 'AC', icao: 'ACA', logo: '🇨🇦', lastUpdated: '2026-06-30',
+                    policyWebLink: 'https://www.aircanada.com/agency', policyPdfLink: '',
+                    threshold: '180', travelWindow: '-/+30 days', oalRebookingVal: 'ALLOWED', refundEligVal: 'YES',
+                    pureSkchg: {
+                        normalSkchg: [
+                            { label: 'MINOR CHANGE PROFILE', value: 'Less than 60 minutes time deviation.', allowed: true },
+                            { label: 'CABIN MATCHING RULES', value: 'Strict Cabin Balance Required.', allowed: false },
+                            { label: 'INVENTORY FALLBACK TARGET', value: 'Original booking class preferred; up to Y class maximum fallback.', allowed: true }
+                        ],
+                        iropSkchg: [
+                            { label: 'MAJOR CHANGE PROFILE', value: '60 minutes or more / Operating carrier change / Stop added.', allowed: true }
+                        ],
+                        normalRefund: [], iropRefund: []
+                    },
+                    pureName: { fields: [] }, oalSkchg: { normalSkchg: [], iropSkchg: [], normalRefund: [], iropRefund: [] }, oalName: { fields: [] }
                 }
-
-                this.extractFourteenFields(extractedText);
-                alert('AI Mapping Done! All 14 fields targeted and filled from document.');
-            } catch (error) {
-                console.error(error);
-                alert('Error scanning text parameters.');
-            }
+            ];
+            localStorage.setItem('disruption_desk_fleet_data', JSON.stringify(this.airlines));
+            this.selectedAirline = this.airlines[0];
         },
 
-        // Deep Text Extraction Engine matching your exact fields
-        extractFourteenFields(text) {
-            const cleanText = text.replace(/\s+/g, ' ');
-            const lowerText = cleanText.toLowerCase();
-
-            // Auto Identification Core
-            if (lowerText.includes('air canada') || lowerText.includes(' ac ')) {
-                this.formAirline.airlineName = 'Air Canada'; this.formAirline.iata = 'AC'; this.formAirline.logo = '🇨🇦';
-            } else if (lowerText.includes('turkish airlines') || lowerText.includes('tk segment')) {
-                this.formAirline.airlineName = 'Turkish Airlines'; this.formAirline.iata = 'TK'; this.formAirline.logo = '🇹🇷';
-            } else {
-                const titleMatch = text.match(/([A-Z][A-Za-z\s]+)(?:Policy|Schedule Change)/);
-                this.formAirline.airlineName = titleMatch ? titleMatch[1].trim() : 'New Carrier';
-                this.formAirline.iata = this.formAirline.airlineName.substring(0,2).toUpperCase();
+        init() {
+            const localSavedData = localStorage.getItem('disruption_desk_fleet_data');
+            if (localSavedData) {
+                try {
+                    const parsed = JSON.parse(localSavedData);
+                    if (Array.isArray(parsed) && parsed.length > 0 && parsed[0].pureSkchg) {
+                        this.airlines = parsed;
+                        this.selectedAirline = this.airlines[0];
+                        return;
+                    }
+                } catch(e) { console.error('Corrupted cache data.'); }
             }
+            this.loadDefaults();
+        },
 
-            // Helper text capture function using heading windows
-            const getSection = (startText, endText, maxLen = 400) => {
-                let startIdx = lowerText.indexOf(startText.toLowerCase());
-                if (startIdx === -1) return 'N/A';
-                startIdx += startText.length;
-                let endIdx = endText ? lowerText.indexOf(endText.toLowerCase(), startIdx) : -1;
-                if (endIdx === -1 || (endIdx - startIdx) > maxLen) endIdx = startIdx + maxLen;
-                return cleanText.substring(startIdx, endIdx).trim();
-            };
-
-            // Parse text arrays directly to fields
-            this.formAirline.reissueQualifications = getSection('reissue qualifications', 'order of selecting');
-            this.formAirline.orderOfSelectingAirlines = getSection('order of selecting airlines for rebooking:', 'rebooking exceptions');
-            this.formAirline.rebookingExceptions = getSection('rebooking exceptions for select airlines/destinations:', 'reissue guidelines');
-            this.formAirline.reissueGuidelines = getSection('reissue guidelines', 'travel window');
-            this.formAirline.travelWindow = getSection('travel window', 'classes');
-            this.formAirline.classes = getSection('classes', 'origin/destination');
-            this.formAirline.originDestination = getSection('origin/destination', 'reissue waiver');
-            this.formAirline.reissueWaiver = getSection('reissue waiver', 'refund guidelines');
-            this.formAirline.refundGuidelines = getSection('refund guidelines', 'refunds are permitted');
-            this.formAirline.refundsPermittedScenarios = getSection('refunds are permitted in the following scenarios:', 'refunds are not permitted');
-            this.formAirline.refundsNotPermittedScenarios = getSection('refunds are not permitted in the following scenarios:', 'for partially used tickets:');
-            this.formAirline.forPartiallyUsedTickets = getSection('for partially used tickets:', 'refund waiver');
-            this.formAirline.refundWaiver = getSection('refund waiver', 'policy link');
+        addCustomField(pillar) {
+            if(!this.newCustomLabel) return alert('Please enter a Field Title Name');
+            const targetPillarKey = pillar === 'pure_skchg' ? 'pureSkchg' : pillar === 'pure_name' ? 'pureName' : pillar === 'oal_skchg' ? 'oalSkchg' : 'oalName';
             
-            // Link Picker
-            const linkMatch = cleanText.match(/https?:\/\/[^\s]+/i);
-            this.formAirline.policyLink = linkMatch ? linkMatch[0] : '';
+            if(!this.formAirline[targetPillarKey]) {
+                if(pillar.includes('name')) { this.formAirline[targetPillarKey] = { fields: [] }; }
+                else { this.formAirline[targetPillarKey] = { normalSkchg: [], iropSkchg: [], normalRefund: [], iropRefund: [] }; }
+            }
+
+            if(pillar.includes('skchg')) {
+                const arrayKey = this.targetConditionType + (this.targetColumnType === 'skchg' ? 'Skchg' : 'Refund');
+                if(!this.formAirline[targetPillarKey][arrayKey]) this.formAirline[targetPillarKey][arrayKey] = [];
+                this.formAirline[targetPillarKey][arrayKey].push({
+                    label: this.newCustomLabel.toUpperCase(), value: this.newCustomValue, allowed: this.newCustomStatus
+                });
+            } else {
+                if(!this.formAirline[targetPillarKey].fields) this.formAirline[targetPillarKey].fields = [];
+                this.formAirline[targetPillarKey].fields.push({
+                    label: this.newCustomLabel.toUpperCase(), value: this.newCustomValue, allowed: this.newCustomStatus
+                });
+            }
+            this.newCustomLabel = ''; this.newCustomValue = ''; this.newCustomStatus = true;
         },
 
-        verifyAdmin() {
-            if(this.adminPasswordInput.trim().toLowerCase() === 'admin123') { this.isAdminMode = true; this.adminPasswordInput = ''; } else { alert('Access Denied'); }
+        removeCustomField(pillar, subType, idx) {
+            const targetPillarKey = pillar === 'pure_skchg' ? 'pureSkchg' : pillar === 'pure_name' ? 'pureName' : pillar === 'oal_skchg' ? 'oalSkchg' : 'oalName';
+            if(pillar.includes('skchg')) {
+                this.formAirline[targetPillarKey][subType].splice(idx, 1);
+            } else {
+                this.formAirline[targetPillarKey].fields.splice(idx, 1);
+            }
         },
 
         saveAirline() {
-            if(!this.formAirline.airlineName) return alert('Airline Name required.');
-            let freshObj = JSON.parse(JSON.stringify(this.formAirline));
-            const idx = this.airlines.findIndex(a => a.iata === freshObj.iata);
-            if(idx !== -1) { this.airlines[idx] = freshObj; } else { this.airlines.push(freshObj); }
+            if(!this.formAirline.airlineName) return alert('Airline Name is required to save.');
+            
+            let freshBase = this.generateEmptyStructure();
+            
+            freshBase.airlineName = this.formAirline.airlineName;
+            freshBase.iata = this.formAirline.iata ? this.formAirline.iata.toUpperCase() : this.formAirline.airlineName.substring(0,2).toUpperCase() + Math.floor(Math.random() * 100);
+            freshBase.icao = this.formAirline.icao ? this.formAirline.icao.toUpperCase() : '';
+            freshBase.logo = this.formAirline.logo || '✈️';
+            freshBase.policyWebLink = this.formAirline.policyWebLink || '';
+            freshBase.policyPdfLink = this.formAirline.policyPdfLink || '';
+            freshBase.threshold = this.formAirline.threshold || 'N/A';
+            freshBase.travelWindow = this.formAirline.travelWindow || 'N/A';
+            freshBase.oalRebookingVal = this.formAirline.oalRebookingVal || 'ALLOWED';
+            freshBase.refundEligVal = this.formAirline.refundEligVal || 'YES';
+
+            if(this.formAirline.pureSkchg) {
+                if(this.formAirline.pureSkchg.normalSkchg) freshBase.pureSkchg.normalSkchg = JSON.parse(JSON.stringify(this.formAirline.pureSkchg.normalSkchg));
+                if(this.formAirline.pureSkchg.iropSkchg) freshBase.pureSkchg.iropSkchg = JSON.parse(JSON.stringify(this.formAirline.pureSkchg.iropSkchg));
+                if(this.formAirline.pureSkchg.normalRefund) freshBase.pureSkchg.normalRefund = JSON.parse(JSON.stringify(this.formAirline.pureSkchg.normalRefund));
+                if(this.formAirline.pureSkchg.iropRefund) freshBase.pureSkchg.iropRefund = JSON.parse(JSON.stringify(this.formAirline.pureSkchg.iropRefund));
+            }
+            if(this.formAirline.pureName && this.formAirline.pureName.fields) freshBase.pureName.fields = JSON.parse(JSON.stringify(this.formAirline.pureName.fields));
+            
+            if(this.formAirline.oalSkchg) {
+                if(this.formAirline.oalSkchg.normalSkchg) freshBase.oalSkchg.normalSkchg = JSON.parse(JSON.stringify(this.formAirline.oalSkchg.normalSkchg));
+                if(this.formAirline.oalSkchg.iropSkchg) freshBase.oalSkchg.iropSkchg = JSON.parse(JSON.stringify(this.formAirline.oalSkchg.iropSkchg));
+                if(this.formAirline.oalSkchg.normalRefund) freshBase.oalSkchg.normalRefund = JSON.parse(JSON.stringify(this.formAirline.oalSkchg.normalRefund));
+                if(this.formAirline.oalSkchg.iropRefund) freshBase.oalSkchg.iropRefund = JSON.parse(JSON.stringify(this.formAirline.oalSkchg.iropRefund));
+            }
+            if(this.formAirline.oalName && this.formAirline.oalName.fields) freshBase.oalName.fields = JSON.parse(JSON.stringify(this.formAirline.oalName.fields));
+
+            const idx = this.airlines.findIndex(a => a.iata === freshBase.iata);
+            if(idx !== -1) {
+                this.airlines[idx] = freshBase;
+            } else {
+                this.airlines.push(freshBase);
+            }
+            
             localStorage.setItem('disruption_desk_fleet_data', JSON.stringify(this.airlines));
-            this.selectedAirline = freshObj;
+            this.selectedAirline = this.airlines.find(a => a.iata === freshBase.iata);
             this.isEditing = false; this.isAdminMode = false; this.resetForm();
         },
 
-        prepareNewAirlineForm() { this.formAirline = this.generateEmptyStructure(); this.isEditing = false; this.isAdminMode = true; },
-        editAirline(airline) { this.formAirline = JSON.parse(JSON.stringify(airline)); this.isEditing = true; this.isAdminMode = true; },
-        resetForm() { this.formAirline = this.generateEmptyStructure(); this.isEditing = false; },
-        init() {
-            const data = localStorage.getItem('disruption_desk_fleet_data');
-            if (data) { try { this.airlines = JSON.parse(data); this.selectedAirline = this.airlines[0]; return; } catch(e) {} }
-            this.loadDefaults();
+        editAirline(airline) {
+            this.formAirline = JSON.parse(JSON.stringify(airline));
+            if(!this.formAirline.pureSkchg) this.formAirline.pureSkchg = { normalSkchg: [], iropSkchg: [], normalRefund: [], iropRefund: [] };
+            if(!this.formAirline.pureName) this.formAirline.pureName = { fields: [] };
+            if(!this.formAirline.oalSkchg) this.formAirline.oalSkchg = { normalSkchg: [], iropSkchg: [], normalRefund: [], iropRefund: [] };
+            if(!this.formAirline.oalName) this.formAirline.oalName = { fields: [] };
+            this.isEditing = true; this.isAdminMode = true;
         },
-        loadDefaults() { this.airlines = []; }
-    }" class="min-h-screen flex flex-col bg-slate-950 text-slate-100 font-sans antialiased text-xs" x-init="init()">
+
+        prepareNewAirlineForm() {
+            this.formAirline = this.generateEmptyStructure();
+            this.isEditing = false;
+            this.isAdminMode = true;
+        },
+
+        // 🛠️ UPGRADED FAILSAFE VERIFICATION CLEANER (Trims spaces and automatically forces lowercase alignment checks)
+        verifyAdmin() {
+            let cleanPasswordInput = this.adminPasswordInput.trim().toLowerCase();
+            if(cleanPasswordInput === 'admin123') { 
+                this.isAdminMode = true; 
+                this.adminPasswordInput = ''; 
+            } else { alert('Access Denied'); }
+        },
+
+        resetForm() {
+            this.formAirline = this.generateEmptyStructure();
+            this.isEditing = false;
+        }
+    }" class="min-h-screen flex flex-col bg-slate-950 text-slate-100 font-sans antialiased text-xs">
 
         <nav class="border-b border-slate-800/80 bg-slate-900/50 backdrop-blur-md sticky top-0 z-50 px-6 py-4 flex justify-between items-center">
-            <div class="flex items-center space-x-3"><span class="text-2xl">🌐</span><h1 class="text-xl font-bold bg-gradient-to-r from-sky-400 to-indigo-400 bg-clip-text text-transparent">DISRUPTION DESK</h1></div>
-            <div class="flex items-center space-x-4">
-                <div class="flex items-center bg-slate-900 p-1 border border-slate-800 rounded-lg">
-                    <input type="password" placeholder="Admin Key..." x-model="adminPasswordInput" @keyup.enter="verifyAdmin()" class="bg-slate-950 border-0 text-xs px-2 py-1 rounded text-white w-20" />
-                    <button @click="verifyAdmin()" class="bg-slate-800 text-white font-bold text-[10px] px-2 py-1 rounded ml-1">Auth</button>
+            <div class="flex items-center space-x-3">
+                <span class="text-2xl">🌐</span>
+                <div>
+                    <h1 class="text-xl font-bold bg-gradient-to-r from-sky-400 to-indigo-400 bg-clip-text text-transparent">DISRUPTION DESK</h1>
+                    <p class="text-xs text-slate-400 font-medium">Airline Policy Reference Hub</p>
                 </div>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <div class="flex items-center bg-slate-900 border border-slate-800 p-0.5 rounded-lg">
+                    <button @click="viewMode = 'customer'" :class="viewMode === 'customer' ? 'bg-sky-600 text-white font-bold' : 'text-slate-400'" class="px-3 py-1 rounded text-[10px] uppercase transition">PASSENGER VIEW</button>
+                    <button @click="viewMode = 'agent'" :class="viewMode === 'agent' ? 'bg-indigo-600 text-white font-bold' : 'text-slate-400'" class="px-3 py-1 rounded text-[10px] uppercase transition">AGENT VIEW</button>
+                </div>
+
+                <div class="flex items-center bg-slate-900 p-1 border border-slate-800 rounded-lg">
+                    <input type="password" placeholder="Admin Key..." x-model="adminPasswordInput" @keyup.enter="verifyAdmin()" class="bg-slate-950 border-0 outline-none text-xs px-2 py-1 rounded text-white w-20 focus:ring-1 focus:ring-sky-500" />
+                    <button @click="verifyAdmin()" class="bg-slate-800 hover:bg-sky-600 text-white font-bold text-[10px] px-2 py-1 rounded ml-1 transition">Auth</button>
+                </div>
+                <template x-if="isAdminMode">
+                    <button @click="isAdminMode = false; resetForm()" class="text-[10px] font-bold bg-slate-800 hover:bg-rose-600 text-white px-2.5 py-1 rounded transition uppercase">Lock</button>
+                </template>
             </div>
         </nav>
 
         <main class="max-w-7xl mx-auto p-6 lg:p-8 grid grid-cols-1 lg:grid-cols-4 gap-8 flex-1 w-full">
+            
             <div class="lg:col-span-1 space-y-6">
-                <div class="bg-gradient-to-br from-slate-900 to-indigo-950/40 border border-slate-800 p-5 rounded-xl shadow-xl">
-                    <label class="block text-slate-400 mb-1 font-bold uppercase tracking-wider">Zulu Clock</label>
-                    <input type="text" x-model="zuluInput" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white font-mono text-center text-sm" />
-                    <div class="text-center text-sky-400 font-bold font-mono mt-1" x-text="'EST: ' + estOutput"></div>
+                <div class="bg-gradient-to-br from-slate-900 to-indigo-950/40 border border-slate-800 p-5 rounded-xl shadow-xl space-y-3">
+                    <div class="flex items-center space-x-2 border-b border-slate-800 pb-2"><span class="text-base">🕰️</span><h4 class="text-xs font-bold uppercase tracking-wider text-slate-300">Zulu Time Converter</h4></div>
+                    <div class="space-y-2">
+                        <input type="text" x-model="zuluInput" placeholder="e.g. 17:30" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white font-mono text-sm focus:outline-none" />
+                        <div class="bg-slate-950/80 border border-slate-800 p-2.5 rounded-lg flex justify-between items-center">
+                            <span class="text-[10px] uppercase text-slate-400 font-semibold">EST Equivalent:</span><span class="text-xs font-bold font-mono text-sky-400" x-text="estOutput"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl shadow-xl space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Search Fleet Index</label>
+                        <input type="text" placeholder="Carrier, IATA, ICAO..." x-model="searchQuery" class="w-full px-4 py-2 bg-slate-950 border border-slate-700 rounded-lg text-white text-sm focus:outline-none" />
+                    </div>
                 </div>
 
                 <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-xl">
                     <div class="flex justify-between items-center mb-3">
-                        <span class="text-xs font-bold text-slate-400 uppercase">Airlines Index (<span x-text="airlines.length"></span>)</span>
-                        <button x-show="isAdminMode" @click="prepareNewAirlineForm()" class="bg-emerald-600 text-slate-950 font-bold px-2 py-0.5 rounded text-[10px]">New +</button>
+                        <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Airlines Index (<span x-text="airlines.length"></span>)</span>
+                        <button x-show="isAdminMode" @click="prepareNewAirlineForm()" class="bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold px-2 py-0.5 rounded text-[10px] uppercase tracking-wider transition">New +</button>
                     </div>
-                    <input type="text" placeholder="Search..." x-model="searchQuery" class="w-full px-3 py-1.5 bg-slate-950 border border-slate-700 rounded mb-2 text-white" />
-                    <div class="space-y-1 max-h-[250px] overflow-y-auto">
-                        <template x-for="airline in airlines.filter(a => !searchQuery || a.airlineName.toLowerCase().includes(searchQuery.toLowerCase()))" :key="airline.iata">
+                    <div class="space-y-1.5 max-h-[250px] overflow-y-auto pr-1">
+                        <template x-for="airline in airlines.filter(a => !searchQuery || a.airlineName.toLowerCase().includes(searchQuery.toLowerCase()) || a.iata.toLowerCase().includes(searchQuery.toLowerCase()))" :key="airline.iata">
                             <div class="flex items-center space-x-1">
-                                <button @click="selectedAirline = airline" :class="selectedAirline && selectedAirline.iata === airline.iata ? 'bg-gradient-to-r from-sky-600 to-indigo-600 text-white shadow-lg' : 'bg-slate-950 border border-slate-800/60'" class="flex-1 text-left p-3 rounded-lg flex justify-between items-center">
+                                <button @click="selectedAirline = airline" :class="selectedAirline && selectedAirline.iata === airline.iata ? 'bg-gradient-to-r from-sky-600 to-indigo-600 text-white shadow-lg' : 'bg-slate-950 border border-slate-800/60'" class="flex-1 text-left p-3 rounded-lg flex justify-between items-center transition">
                                     <div class="flex items-center space-x-3"><span x-text="airline.logo"></span><span class="font-semibold" x-text="airline.airlineName"></span></div>
                                     <span class="font-mono text-xs opacity-70" x-text="'[' + airline.iata + ']'"></span>
                                 </button>
-                                <template x-if="isAdminMode"><button @click="editAirline(airline)" class="p-2 bg-slate-900 border border-slate-800 rounded text-amber-400">✏️</button></template>
+                                <template x-if="isAdminMode"><button @click="editAirline(airline)" class="p-2 bg-slate-900 border border-slate-800 rounded text-amber-400 hover:bg-amber-600 text-white transition">✏️</button></template>
                             </div>
                         </template>
                     </div>
@@ -207,86 +319,247 @@
             </div>
 
             <div class="lg:col-span-3 space-y-6">
+                
+                <div class="bg-slate-900 border border-slate-800 p-1.5 rounded-xl grid grid-cols-2 md:grid-cols-4 gap-1.5">
+                    <button @click="activePolicy = 'pure_skchg'" :class="activePolicy === 'pure_skchg' ? 'bg-gradient-to-r from-sky-600 to-indigo-600 text-white shadow font-bold' : 'text-slate-400 hover:text-slate-200'" class="py-2 rounded-lg font-semibold transition">
+                        🔄 Pure Airline: Schedule Change
+                    </button>
+                    <button @click="activePolicy = 'pure_name'" :class="activePolicy === 'pure_name' ? 'bg-gradient-to-r from-sky-600 to-indigo-600 text-white shadow font-bold' : 'text-slate-400 hover:text-slate-200'" class="py-2 rounded-lg font-semibold transition">
+                        📝 Pure Airline: Name Correction
+                    </button>
+                    <button @click="activePolicy = 'oal_skchg'" :class="activePolicy === 'oal_skchg' ? 'bg-gradient-to-r from-amber-600 to-orange-600 text-white shadow font-bold' : 'text-slate-400 hover:text-slate-200'" class="py-2 rounded-lg font-semibold transition">
+                        ✈️ OAL Policy: Schedule Change
+                    </button>
+                    <button @click="activePolicy = 'oal_name'" :class="activePolicy === 'oal_name' ? 'bg-gradient-to-r from-amber-600 to-orange-600 text-white shadow font-bold' : 'text-slate-400 hover:text-slate-200'" class="py-2 rounded-lg font-semibold transition">
+                        ⌨️ OAL Policy: Name Correction
+                    </button>
+                </div>
 
-                <div x-show="isAdminMode" class="bg-[#0b1329] border border-slate-800 rounded-xl p-6 space-y-6 shadow-2xl">
-                    <div class="border-2 border-dashed border-sky-800/80 bg-sky-950/20 rounded-xl p-6 text-center relative">
-                        <input type="file" accept=".pdf" @change="handlePdfAutoUpload($event)" class="absolute inset-0 opacity-0 cursor-pointer z-10" />
-                        <span class="text-2xl block">🤖 14-Field Smart AI Guidelines Scanner</span>
-                        <p class="text-xs text-slate-200 mt-1">Drop any PDF policy file here to automatically read and populate all fields</p>
+                <div x-show="isAdminMode" class="bg-[#0b1329] border border-slate-800 rounded-xl p-6 shadow-2xl space-y-6">
+                    <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+                        <span class="text-xs font-bold text-amber-400 uppercase tracking-widest block">ADMIN CONTROL PANEL</span>
+                        <button type="button" @click="forceResetDatabase()" class="bg-rose-900/60 hover:bg-rose-600 border border-rose-800 text-white font-bold px-2.5 py-0.5 rounded text-[10px] uppercase transition">⚠️ Reset DB Caches</button>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div><label class="block text-slate-400 mb-1">Airline Name</label><input type="text" x-model="formAirline.airlineName" class="w-full bg-[#070b19] border border-slate-800 p-2 rounded text-white" /></div>
+                        <div><label class="block text-slate-400 mb-1">IATA Code</label><input type="text" x-model="formAirline.iata" :disabled="isEditing" placeholder="e.g. AA" class="w-full bg-[#070b19] border border-slate-800 p-2 rounded text-white" /></div>
+                        <div><label class="block text-amber-400 mb-1">SKD Trigger Override</label><input type="text" x-model="formAirline.threshold" class="w-full bg-[#070b19] border border-slate-800 p-2 rounded text-white" /></div>
+                        <div><label class="block text-sky-400 mb-1">Window Metric Override</label><input type="text" x-model="formAirline.travelWindow" class="w-full bg-[#070b19] border border-slate-800 p-2 rounded text-white" /></div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div><label class="block text-slate-400 mb-1 font-bold">Airline Name</label><input type="text" x-model="formAirline.airlineName" class="w-full bg-[#070b19] border border-slate-800 p-2 rounded text-white" /></div>
-                        <div><label class="block text-slate-400 mb-1 font-bold">IATA Code</label><input type="text" x-model="formAirline.iata" class="w-full bg-[#070b19] border border-slate-800 p-2 rounded text-white" /></div>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-xs pt-2">
+                        <div><label class="block text-emerald-400 mb-1">OAL Rebooking [ALLOWED/PROHIBITED]</label><input type="text" x-model="formAirline.oalRebookingVal" class="w-full bg-[#070b19] border border-slate-800 p-2 rounded" /></div>
+                        <div><label class="block text-emerald-400 mb-1">Refund Eligibility [YES/NO]</label><input type="text" x-model="formAirline.refundEligVal" class="w-full bg-[#070b19] border border-slate-800 p-2 rounded" /></div>
+                        <div><label class="block text-slate-400 mb-1">Official Web Portal URL</label><input type="url" x-model="formAirline.policyWebLink" class="w-full bg-[#070b19] border border-slate-800 p-2 rounded" /></div>
+                        <div><label class="block text-slate-400 mb-1">Downloadable Reference PDF URL</label><input type="url" x-model="formAirline.policyPdfLink" class="w-full bg-[#070b19] border border-slate-800 p-2 rounded" /></div>
                     </div>
 
-                    <div class="space-y-4 pt-2">
-                        <div><label class="block text-sky-400 mb-1 font-bold">Reissue Qualifications</label><textarea x-model="formAirline.reissueQualifications" class="w-full bg-[#070b19] border border-slate-800 p-2 rounded h-16 text-white"></textarea></div>
-                        <div><label class="block text-sky-400 mb-1 font-bold">Order of Selecting Airlines for Rebooking</label><textarea x-model="formAirline.orderOfSelectingAirlines" class="w-full bg-[#070b19] border border-slate-800 p-2 rounded h-16 text-white"></textarea></div>
-                        <div><label class="block text-sky-400 mb-1 font-bold">Rebooking Exceptions for Select Airlines/Destinations</label><textarea x-model="formAirline.rebookingExceptions" class="w-full bg-[#070b19] border border-slate-800 p-2 rounded h-16 text-white"></textarea></div>
-                        <div><label class="block text-sky-400 mb-1 font-bold">Reissue Guidelines</label><textarea x-model="formAirline.reissueGuidelines" class="w-full bg-[#070b19] border border-slate-800 p-2 rounded h-16 text-white"></textarea></div>
-                        <div><label class="block text-sky-400 mb-1 font-bold">Travel Window</label><textarea x-model="formAirline.travelWindow" class="w-full bg-[#070b19] border border-slate-800 p-2 rounded h-16 text-white"></textarea></div>
-                        <div><label class="block text-sky-400 mb-1 font-bold">Classes</label><textarea x-model="formAirline.classes" class="w-full bg-[#070b19] border border-slate-800 p-2 rounded h-16 text-white"></textarea></div>
-                        <div><label class="block text-sky-400 mb-1 font-bold">Origin/Destination</label><textarea x-model="formAirline.originDestination" class="w-full bg-[#070b19] border border-slate-800 p-2 rounded h-16 text-white"></textarea></div>
-                        <div><label class="block text-sky-400 mb-1 font-bold">Reissue Waiver</label><textarea x-model="formAirline.reissueWaiver" class="w-full bg-[#070b19] border border-slate-800 p-2 rounded h-16 text-white"></textarea></div>
-                        <div><label class="block text-emerald-400 mb-1 font-bold">Refund Guidelines</label><textarea x-model="formAirline.refundGuidelines" class="w-full bg-[#070b19] border border-slate-800 p-2 rounded h-16 text-white"></textarea></div>
-                        <div><label class="block text-emerald-400 mb-1 font-bold">Refunds are Permitted in the Following Scenarios</label><textarea x-model="formAirline.refundsPermittedScenarios" class="w-full bg-[#070b19] border border-slate-800 p-2 rounded h-16 text-white"></textarea></div>
-                        <div><label class="block text-emerald-400 mb-1 font-bold">Refunds are Not Permitted in the Following Scenarios</label><textarea x-model="formAirline.refundsNotPermittedScenarios" class="w-full bg-[#070b19] border border-slate-800 p-2 rounded h-16 text-white"></textarea></div>
-                        <div><label class="block text-emerald-400 mb-1 font-bold">For Partially Used Tickets</label><textarea x-model="formAirline.forPartiallyUsedTickets" class="w-full bg-[#070b19] border border-slate-800 p-2 rounded h-16 text-white"></textarea></div>
-                        <div><label class="block text-emerald-400 mb-1 font-bold">Refund Waiver</label><textarea x-model="formAirline.refundWaiver" class="w-full bg-[#070b19] border border-slate-800 p-2 rounded h-16 text-white"></textarea></div>
-                        <div><label class="block text-slate-400 mb-1 font-bold">Policy Link</label><input type="url" x-model="formAirline.policyLink" class="w-full bg-[#070b19] border border-slate-800 p-2 rounded text-white" /></div>
+                    <div class="bg-[#070b19] p-4 rounded-xl border border-slate-800 space-y-4">
+                        <div class="bg-slate-900 p-4 border border-dashed border-slate-700 rounded-lg grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <template x-if="activePolicy.includes('skchg')">
+                                <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div><label class="block font-semibold mb-1">1. Choose Metric Domain Column</label>
+                                        <select x-model="targetColumnType" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white">
+                                            <option value="skchg">Schedule Change Framework</option>
+                                            <option value="refund">Refund Protocols</option>
+                                        </select>
+                                    </div>
+                                    <div><label class="block font-semibold mb-1">2. Choose Policy Matrix Severity</label>
+                                        <select x-model="targetConditionType" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-white">
+                                            <option value="normal">Normal Policy Profile</option>
+                                            <option value="irop">IROPS Emergency Policy Profile</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </template>
+                            <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-2 pt-2">
+                                <input type="text" x-model="newCustomLabel" placeholder="Field Row Title..." class="bg-slate-950 p-2 border border-slate-800 rounded text-white text-xs" />
+                                <input type="text" x-model="newCustomValue" placeholder="Field Rules Content Guidelines..." class="bg-slate-950 p-2 border border-slate-800 rounded text-white text-xs md:col-span-2" />
+                            </div>
+                            <button type="button" @click="addCustomField(activePolicy)" class="md:col-span-2 w-full py-2 bg-indigo-600 hover:bg-indigo-500 font-bold uppercase rounded text-xs transition">Inject Field Slot Node</button>
+                        </div>
+
+                        <div class="space-y-4 max-h-[350px] overflow-y-auto">
+                            <template x-if="activePolicy.includes('skchg')">
+                                <div class="space-y-2">
+                                    <template x-for="subType in ['normalSkchg', 'iropSkchg', 'normalRefund', 'iropRefund']">
+                                        <div class="p-2 border border-slate-800 rounded bg-slate-950/60 mt-1">
+                                            <span class="text-[10px] font-bold text-amber-500 block uppercase mb-1" x-text="subType.replace('Skchg',' Column (Change Framework)').replace('Refund',' Column (Refund Protocols)')"></span>
+                                            <template x-for="(field, index) in formAirline[activePolicy === 'pure_skchg' ? 'pureSkchg' : 'oalSkchg']?.[subType]" :key="index">
+                                                <div class="flex items-center gap-2 mt-1">
+                                                    <input type="text" x-model="field.label" class="bg-slate-900 border border-slate-700 p-1 rounded font-bold text-white w-1/3" />
+                                                    <input type="text" x-model="field.value" class="bg-slate-900 border border-slate-700 p-1 rounded text-slate-300 flex-1" />
+                                                    <button type="button" @click="field.allowed = !field.allowed" :class="field.allowed ? 'bg-emerald-600' : 'bg-rose-600'" class="px-2 py-1 rounded text-[9px]" x-text="field.allowed ? 'YES' : 'NO'"></button>
+                                                    <button type="button" @click="removeCustomField(activePolicy, subType, index)" class="text-rose-500 font-bold px-1 text-xs">🗑️</button>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </template>
+                                </div>
+                            </template>
+
+                            <template x-if="!activePolicy.includes('skchg')">
+                                <div class="p-2 border border-slate-800 rounded bg-slate-950/60 mt-1">
+                                    <span class="text-[10px] font-bold text-purple-400 block uppercase mb-1">Name Correction Rows Studio</span>
+                                    <template x-for="(field, index) in formAirline[activePolicy === 'pure_name' ? 'pureName' : 'oalName']?.fields" :key="index">
+                                        <div class="flex items-center gap-2 mt-1">
+                                            <input type="text" x-model="field.label" class="bg-slate-900 border border-slate-700 p-1 rounded font-bold text-white w-1/3" />
+                                            <input type="text" x-model="field.value" class="bg-slate-900 border border-slate-700 p-1 rounded text-slate-300 flex-1" />
+                                            <button type="button" @click="field.allowed = !field.allowed" :class="field.allowed ? 'bg-emerald-600' : 'bg-rose-600'" class="px-2 py-1 rounded text-[9px]" x-text="field.allowed ? 'YES' : 'NO'"></button>
+                                            <button type="button" @click="removeCustomField(activePolicy, 'fields', index)" class="text-rose-500 font-bold px-1 text-xs">🗑️</button>
+                                        </div>
+                                    </template>
+                                </div>
+                            </template>
+                        </div>
                     </div>
-                    <button @click="saveAirline()" class="w-full py-3 bg-gradient-to-r from-amber-500 to-orange-600 text-slate-950 font-bold uppercase rounded-lg shadow-lg">Commit & Save Complete Airline Profile Object</button>
+                    <button @click="saveAirline()" class="w-full py-3 bg-gradient-to-r from-amber-500 to-orange-600 text-slate-950 font-bold uppercase rounded-lg shadow-lg tracking-wider">Commit & Save Complete Airline Profile Object</button>
                 </div>
 
                 <div>
                     <template x-if="selectedAirline">
-                        <div class="space-y-6 animate-fadeIn">
+                        <div class="space-y-6">
                             
-                            <div class="bg-[#0b1329] p-6 rounded-xl border border-slate-800 flex justify-between items-center shadow-xl">
-                                <div class="flex items-center space-x-4">
-                                    <span class="text-3xl" x-text="selectedAirline.logo"></span>
-                                    <div>
-                                        <h2 class="text-lg font-bold text-white" x-text="selectedAirline.airlineName"></h2>
-                                        <span class="font-mono text-slate-400" x-text="'IATA: ' + selectedAirline.iata"></span>
+                            <div class="bg-[#0b1329] p-6 rounded-xl border border-slate-800 shadow-xl space-y-4">
+                                <div class="flex items-center space-x-2 border-b border-slate-800 pb-2">
+                                    <h3 class="text-xs font-bold text-slate-300 uppercase tracking-widest">OFFICIAL CARRIER DOCUMENT VAULT</h3>
+                                </div>
+                                <div class="flex flex-wrap gap-4 text-xs font-semibold">
+                                    <template x-if="selectedAirline.policyWebLink">
+                                        <a :href="selectedAirline.policyWebLink" target="_blank" class="flex items-center space-x-2 bg-slate-950 hover:bg-sky-950 border border-slate-700/60 hover:border-sky-500 text-slate-300 hover:text-sky-400 px-4 py-3 rounded-lg transition shadow-md">
+                                            <span>🔗</span> <span>Official Web Policy Portal</span>
+                                        </a>
+                                    </template>
+                                    <template x-if="selectedAirline.policyPdfLink">
+                                        <a :href="selectedAirline.policyPdfLink" target="_blank" download class="flex items-center space-x-2 bg-slate-950 hover:bg-emerald-950 border border-slate-700/60 hover:border-emerald-500 text-slate-300 hover:text-emerald-400 px-4 py-3 rounded-lg transition shadow-md">
+                                            <span>📥</span> <span>Download Reference Guidelines (PDF)</span>
+                                        </a>
+                                    </template>
+                                </div>
+                            </div>
+
+                            <template x-if="activePolicy.includes('skchg')">
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 animate-fadeIn">
+                                    <div class="bg-[#0b1329] p-4 rounded-xl border border-slate-800 text-center shadow-md">
+                                        <span class="block text-[10px] uppercase font-bold text-slate-400 tracking-wider">SKD CHG TRIGGER</span>
+                                        <span class="text-xs font-bold text-amber-500 mt-1 block" x-text="selectedAirline.threshold || 'N/A'"></span>
+                                    </div>
+                                    <div class="bg-[#0b1329] p-4 rounded-xl border border-slate-800 text-center shadow-md">
+                                        <span class="block text-[10px] uppercase font-bold text-slate-400 tracking-wider">TRAVEL WINDOW</span>
+                                        <span class="text-xs font-bold text-sky-400 mt-1 block" x-text="selectedAirline.travelWindow || 'N/A'"></span>
+                                    </div>
+                                    <div class="bg-[#0b1329] p-4 rounded-xl border border-slate-800 text-center shadow-md">
+                                        <span class="block text-[10px] uppercase font-bold text-slate-400 tracking-wider">OAL REBOOKING</span>
+                                        <span class="text-xs font-bold text-emerald-400 mt-1 block" x-text="selectedAirline.oalRebookingVal"></span>
+                                    </div>
+                                    <div class="bg-[#0b1329] p-4 rounded-xl border border-slate-800 text-center shadow-md">
+                                        <span class="block text-[10px] uppercase font-bold text-slate-400 tracking-wider">REFUND ELIGIBILITY</span>
+                                        <span class="text-xs font-bold text-emerald-400 mt-1 block" x-text="selectedAirline.refundEligVal"></span>
                                     </div>
                                 </div>
-                                <template x-if="selectedAirline.policyLink">
-                                    <a :href="selectedAirline.policyLink" target="_blank" class="bg-slate-950 border border-slate-700 hover:border-sky-500 px-4 py-2.5 rounded-lg font-bold text-sky-400 transition">🔗 Open Reference Source Policy</a>
-                                </template>
-                            </div>
+                            </template>
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 
-                                <div class="bg-[#0b1329] p-6 rounded-xl border border-slate-800 space-y-4 shadow-xl">
-                                    <h3 class="text-sm font-bold text-sky-400 border-b border-slate-800 pb-2 uppercase tracking-wider">🔄 Reissue & Rebooking Guidelines</h3>
-                                    <div class="space-y-3">
-                                        <div><span class="text-[10px] font-bold text-slate-400 uppercase block">Reissue Qualifications</span><p class="text-slate-200 mt-0.5 select-text font-medium" x-text="selectedAirline.reissueQualifications"></p></div>
-                                        <div><label class="block text-slate-400 font-bold text-[10px] uppercase">Order of Selecting Airlines for Rebooking</label><p class="text-slate-200 select-text font-medium" x-text="selectedAirline.orderOfSelectingAirlines"></p></div>
-                                        <div><label class="block text-slate-400 font-bold text-[10px] uppercase">Rebooking Exceptions for Select Airlines/Destinations</label><p class="text-slate-200 select-text font-medium" x-text="selectedAirline.rebookingExceptions"></p></div>
-                                        <div><label class="block text-slate-400 font-bold text-[10px]" uppercase>Reissue Guidelines</label><p class="text-slate-200 select-text font-medium" x-text="selectedAirline.reissueGuidelines"></p></div>
-                                        <div><label class="block text-slate-400 font-bold text-[10px]" x-text="'Travel Window'"></label><p class="text-slate-200 select-text font-medium" x-text="selectedAirline.travelWindow"></p></div>
-                                        <div><label class="block text-slate-400 font-bold text-[10px]" x-text="'Classes'"></label><p class="text-slate-200 select-text font-medium" x-text="selectedAirline.classes"></p></div>
-                                        <div><label class="block text-slate-400 font-bold text-[10px]" x-text="'Origin/Destination'"></label><p class="text-slate-200 select-text font-medium" x-text="selectedAirline.originDestination"></p></div>
-                                        <div><label class="block text-slate-400 font-bold text-[10px]" x-text="'Reissue Waiver'"></label><p class="text-slate-300 font-mono select-text font-bold text-sky-400 bg-sky-950/20 p-1 rounded inline-block" x-text="selectedAirline.reissueWaiver"></p></div>
+                                <div class="bg-[#0b1329] p-6 rounded-xl border border-slate-800 shadow-xl space-y-4">
+                                    <div class="flex items-center space-x-2 border-b border-slate-800 pb-3">
+                                        <span class="text-lg">📋</span>
+                                        <h3 class="text-sm font-bold text-sky-400 uppercase tracking-wider" x-text="activePolicy.includes('skchg') ? 'SCHEDULE CHANGE FRAMEWORK' : 'NAME CORRECTION RULES'"></h3>
+                                    </div>
+
+                                    <div class="space-y-4 text-xs">
+                                        <template x-if="activePolicy.includes('skchg')">
+                                            <div class="space-y-4">
+                                                <span class="text-[10px] font-bold text-indigo-400 tracking-widest uppercase block bg-slate-950 p-1 border-l-2 border-indigo-500">Normal Policy Ruleset</span>
+                                                <template x-for="(field, index) in selectedAirline[activePolicy === 'pure_skchg' ? 'pureSkchg' : 'oalSkchg']?.normalSkchg" :key="'live-skchg-'+index">
+                                                    <div x-show="viewMode === 'agent' || !isInternalField(field.label)" class="flex flex-col border-b border-slate-800/40 pb-2.5 animate-fadeIn">
+                                                        <div class="flex justify-between items-center mb-1">
+                                                            <span class="text-slate-400 font-bold uppercase text-[10px]" x-text="field.label"></span>
+                                                            <span :class="field.allowed ? 'text-emerald-500 bg-emerald-500/10 border border-emerald-500/20' : 'text-rose-500 bg-rose-500/10 border border-rose-500/20'" class="text-[9px] px-1.5 rounded font-mono font-bold" x-text="field.allowed ? 'ALLOWED' : 'PROHIBITED'"></span>
+                                                        </div>
+                                                        <p class="text-slate-200 font-medium leading-relaxed select-text" x-text="field.value"></p>
+                                                    </div>
+                                                </template>
+                                                
+                                                <span class="text-[10px] font-bold text-amber-500 tracking-widest uppercase block bg-slate-950 p-1 border-l-2 border-amber-500 pt-2">IROPS Disruption Policy Ruleset</span>
+                                                <template x-for="(field, index) in selectedAirline[activePolicy === 'pure_skchg' ? 'pureSkchg' : 'oalSkchg']?.iropSkchg" :key="'live-skchg-irop-'+index">
+                                                    <div x-show="viewMode === 'agent' || !isInternalField(field.label)" class="flex flex-col border-b border-slate-800/40 pb-2.5 animate-fadeIn">
+                                                        <div class="flex justify-between items-center mb-1">
+                                                            <span class="text-slate-400 font-bold uppercase text-[10px]" x-text="field.label"></span>
+                                                            <span :class="field.allowed ? 'text-emerald-500 bg-emerald-500/10 border border-emerald-500/20' : 'text-rose-500 bg-rose-500/10 border border-rose-500/20'" class="text-[9px] px-1.5 rounded font-mono font-bold" x-text="field.allowed ? 'ALLOWED' : 'PROHIBITED'"></span>
+                                                        </div>
+                                                        <p class="text-slate-200 font-medium leading-relaxed select-text" x-text="field.value"></p>
+                                                    </div>
+                                                </template>
+                                            </div>
+                                        </template>
+
+                                        <template x-if="!activePolicy.includes('skchg')">
+                                            <div class="space-y-4">
+                                                <template x-for="(field, index) in selectedAirline[activePolicy === 'pure_name' ? 'pureName' : 'oalName']?.fields" :key="'live-name-l-'+index">
+                                                    <div x-show="viewMode === 'agent' || !isInternalField(field.label)" class="flex flex-col border-b border-slate-800/40 pb-2.5 animate-fadeIn">
+                                                        <div class="flex justify-between items-center mb-1">
+                                                            <span class="text-slate-400 font-bold uppercase text-[10px]" x-text="field.label"></span>
+                                                            <span :class="field.allowed ? 'text-emerald-500 bg-emerald-500/10 border border-emerald-500/20' : 'text-rose-500 bg-rose-500/10 border border-rose-500/20'" class="text-[9px] px-1.5 rounded font-mono font-bold" x-text="field.allowed ? 'ALLOWED' : 'PROHIBITED'"></span>
+                                                        </div>
+                                                        <p class="text-slate-200 font-medium leading-relaxed select-text" x-text="field.value"></p>
+                                                    </div>
+                                                </template>
+                                            </div>
+                                        </template>
                                     </div>
                                 </div>
 
-                                <div class="bg-[#0b1329] p-6 rounded-xl border border-slate-800 space-y-4 shadow-xl">
-                                    <h3 class="text-sm font-bold text-emerald-400 uppercase tracking-wider">⚖️ Refund Matrix & Protocols</h3>
+                                <div class="bg-[#0b1329] p-6 rounded-xl border border-slate-800 shadow-xl space-y-4">
+                                    <div class="flex items-center space-x-2 border-b border-slate-800 pb-3">
+                                        <span class="text-lg">⚙️</span>
+                                        <h3 class="text-sm font-bold text-emerald-400 uppercase tracking-wider">REFUND PROTOCOLS</h3>
+                                    </div>
+
                                     <div class="space-y-4 text-xs">
-                                        <div><label class="block text-slate-400 mb-0.5 font-bold text-[10px] uppercase">Refund Guidelines</label><p class="text-slate-200 select-text font-medium" x-text="selectedAirline.refundGuidelines"></p></div>
-                                        <div><label class="block text-slate-400 mb-0.5 font-bold text-[10px] uppercase">Refunds are Permitted in the Following Scenarios</label><p class="text-slate-200 select-text font-medium text-emerald-400 bg-emerald-950/10 p-2 rounded border border-emerald-900/30 leading-relaxed" x-text="selectedAirline.refundsPermittedScenarios"></p></div>
-                                        <div><label class="block text-slate-400 mb-0.5 font-bold text-[10px] uppercase">Refunds are Not Permitted in the Following Scenarios</label><p class="text-slate-200 select-text font-medium text-rose-400 bg-rose-950/10 p-2 rounded border border-rose-900/30 leading-relaxed" x-text="selectedAirline.refundsNotPermittedScenarios"></p></div>
-                                        <div><label class="block text-slate-400 mb-0.5 font-bold text-[10px] uppercase">For Partially Used Tickets</label><p class="text-slate-200 select-text font-medium" x-text="selectedAirline.forPartiallyUsedTickets"></p></div>
-                                        <div><label class="block text-slate-400 mb-0.5 font-bold text-[10px] uppercase">Refund Waiver</label><p class="text-emerald-400 font-mono select-text font-bold bg-emerald-950/20 p-1 rounded inline-block" x-text="selectedAirline.refundWaiver"></p></div>
+                                        <template x-if="activePolicy.includes('skchg')">
+                                            <div class="space-y-4">
+                                                <span class="text-[10px] font-bold text-indigo-400 tracking-widest uppercase block bg-slate-950 p-1 border-l-2 border-indigo-500">Normal Refund Protocols</span>
+                                                <template x-for="(field, index) in selectedAirline[activePolicy === 'pure_skchg' ? 'pureSkchg' : 'oalSkchg']?.refundFields" :key="'live-refund-'+index">
+                                                    <div x-show="viewMode === 'agent' || !isInternalField(field.label)" class="flex flex-col border-b border-slate-800/40 pb-2.5 animate-fadeIn">
+                                                        <div class="flex justify-between items-center mb-1">
+                                                            <span class="text-emerald-400 font-bold uppercase text-[10px]" x-text="field.label"></span>
+                                                            <span :class="field.allowed ? 'text-emerald-500 bg-emerald-500/10 border border-emerald-500/20' : 'text-rose-500 bg-rose-500/10 border border-rose-500/20'" class="text-[9px] px-1.5 rounded font-mono font-bold" x-text="field.allowed ? 'ALLOWED' : 'PROHIBITED'"></span>
+                                                        </div>
+                                                        <p class="text-slate-200 font-medium leading-relaxed select-text" x-text="field.value"></p>
+                                                    </div>
+                                                </template>
+                                                
+                                                <span class="text-[10px] font-bold text-amber-500 tracking-widest uppercase block bg-slate-950 p-1 border-l-2 border-amber-500 pt-2">IROPS Disruption Refund Protocols</span>
+                                                <template x-for="(field, index) in selectedAirline[activePolicy === 'pure_skchg' ? 'pureSkchg' : 'oalSkchg']?.iropRefund" :key="'live-refund-irop-'+index">
+                                                    <div x-show="viewMode === 'agent' || !isInternalField(field.label)" class="flex flex-col border-b border-slate-800/40 pb-2.5 animate-fadeIn">
+                                                        <div class="flex justify-between items-center mb-1">
+                                                            <span class="text-emerald-400 font-bold uppercase text-[10px]" x-text="field.label"></span>
+                                                            <span :class="field.allowed ? 'text-emerald-500 bg-emerald-500/10 border border-emerald-500/20' : 'text-rose-500 bg-rose-500/10 border border-rose-500/20'" class="text-[9px] px-1.5 rounded font-mono font-bold" x-text="field.allowed ? 'ALLOWED' : 'PROHIBITED'"></span>
+                                                        </div>
+                                                        <p class="text-slate-200 font-medium leading-relaxed select-text" x-text="field.value"></p>
+                                                    </div>
+                                                </template>
+                                            </div>
+                                        </template>
+
+                                        <template x-if="!activePolicy.includes('skchg')">
+                                            <div class="space-y-4">
+                                                <p class="text-slate-500 italic text-center py-4">Workstation layout commands, rules, and system formats are synced directly under the Primary targets panel view matrix.</p>
+                                            </div>
+                                        </template>
                                     </div>
                                 </div>
 
                             </div>
                         </div>
                     </template>
+                    <template x-if="!selectedAirline">
+                        <div class="bg-slate-900 border border-slate-800 p-12 text-center rounded-xl font-medium text-slate-500 uppercase tracking-widest shadow-inner" x-text="i18n[currentLang].noSelection"></div>
+                    </template>
                 </div>
+
             </div>
         </main>
     </div>
