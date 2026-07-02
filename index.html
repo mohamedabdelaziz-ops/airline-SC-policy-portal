@@ -63,6 +63,15 @@
         targetColumnType: 'skchg', 
         targetConditionType: 'normal', 
 
+        i18n: {
+            en: {
+                title: 'DISRUPTION DESK',
+                subtitle: 'Airline Policy Reference Hub',
+                searchPlaceholder: 'Carrier, IATA, ICAO...',
+                noSelection: 'No Airline Selected'
+            }
+        },
+
         formAirline: {
             airlineName: '', iata: '', icao: '', country: '', alliance: '', logo: '✈️', lastUpdated: '2026-07-01',
             threshold: '', travelWindowBefore: '', travelWindowAfter: '', validTravelPeriod: '',
@@ -158,7 +167,6 @@
             if (localSavedData) {
                 try {
                     const parsed = JSON.parse(localSavedData);
-                    // Automatic Schema Migration Guard: Checks if the old database layout is missing the new 'travelWindowBefore' variable
                     if (Array.isArray(parsed) && parsed.length > 0 && parsed[0].pureSkchg && parsed[0].travelWindowBefore !== undefined) {
                         this.airlines = parsed;
                         this.selectedAirline = this.airlines[0];
@@ -326,9 +334,9 @@
                 this.missingFieldsList = data.undeterminedFields || [];
                 this.aiMetricsLoaded = true;
                 
-                alert("✨ Complete! Fields parsed and populated below. Please review your matrix before saving.");
+                alert('✨ AI Generation Complete! Review extracted mappings inside the admin frame parameters below.');
             } catch (e) {
-                alert('Connection tracking to AI parsing routine dropped.');
+                alert('Connection monitoring node mapping dropped.');
             }
         }
     }" class="min-h-screen flex flex-col bg-slate-950 text-slate-100 font-sans antialiased text-xs">
